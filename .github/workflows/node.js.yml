@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - Development
+  workflow_dispatch: # This allows you to manually trigger the workflow
 
 jobs:
   build:
