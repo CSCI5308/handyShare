@@ -9,12 +9,12 @@ on:
     branches:
       - Development
     paths:
-      - 'Frontend/**'
+      - 'handyShare/Frontend/**'
   pull_request:
     branches:
       - Development
     paths:
-      - 'Frontend/**'
+      - 'handyShare/Frontend/**'
 jobs:
   build:
     runs-on: ubuntu-latest
