@@ -9,12 +9,12 @@ on:
     branches:
       - Development
     paths:
-      - 'frontend/**'
+      - 'Frontend/**'
   pull_request:
     branches:
       - Development
     paths:
-      - 'frontend/**'
+      - 'Frontend/**'
 jobs:
   build:
     runs-on: ubuntu-latest
