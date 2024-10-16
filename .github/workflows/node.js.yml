@@ -7,12 +7,12 @@ name: Frontend pipeline for the Development branch
 on:
   push:
     branches:
-      - development
+      - Development
     paths:
       - 'frontend/**'
   pull_request:
     branches:
-      - development
+      - Development
     paths:
       - 'frontend/**'
 jobs:
