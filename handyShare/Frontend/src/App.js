@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import Signup from './pages/Signup.tsx'; 
 import Login from './pages/Login.tsx';
 import ForgotPassword from './pages/ForgotPassword.tsx';
+import ProductPage from './pages/ProductPage.tsx';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/product" element={<ProductPage />} />
     </Routes>
   );
 }
