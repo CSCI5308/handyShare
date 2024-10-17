@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -27,15 +28,22 @@ public class ProductController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product){
-       Product updatedProduct=productService.updateProduct(id, product);
-       return new ResponseEntity<>(updatedProduct, HttpStatus.CREATED);
+        Product updatedProduct=productService.updateProduct(id, product);
+        return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
+    }
+
+    @GetMapping("/products/{id}")
+    public Product viewProductById(@PathVariable Long id){
+        return productService.getProductById(id);
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable Long id){
-        productService.deleteProduct(id);
-        Map<String, String> response=new HashMap<>();
-        response.put("message", "Product removed Successfully.");
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        boolean isDeleted=productService.deleteProduct(id);
+        if (isDeleted){
+            return ResponseEntity.ok("Product deleted Successfully!");
+        }else{
+            return ResponseEntity.status(404).body("Product ID does not exist!");
+        }
     }
 }

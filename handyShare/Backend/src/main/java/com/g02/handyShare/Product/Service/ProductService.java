@@ -33,13 +33,22 @@ public class ProductService {
 
             return productRepository.save(existingProduct);
         }else{
-            throw new RuntimeException("Product not found with id"+ id);
+            throw new CustomException("Product not found with id: "+ id);
         }
     }
 
-    //delete product
-    public void deleteProduct(Long productId){
-        productRepository.deleteById(productId);
+    public Product getProductById(Long id){
+        return productRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("Product not Found!"));
+    }
 
+    //delete product
+    public boolean deleteProduct(Long productId){
+        if(productRepository.existsById(productId)){
+            productRepository.deleteById(productId);
+            return true;
+        }else {
+            return false;
+        }
     }
 }
