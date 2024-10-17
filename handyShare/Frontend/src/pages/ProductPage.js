@@ -14,11 +14,18 @@ export default function ProductPage() {
   ];
 
   return (
-    <div>
-      <Header />
-      <main className="p-8 flex">
-        <div className="w-1/3">
-          <ProductImage imageUrl="/path/to/image.jpg" altText="Product Image" />
+    <div className="min-h-screen flex flex-col">
+      <header className="bg-gray-800 text-white p-4 flex justify-between items-center">
+        <div className="text-xl font-bold">handyShare</div>
+        <nav className="space-x-4">
+          <a href="/lendings" className="hover:underline">Lendings</a>
+          <a href="/borrowings" className="hover:underline">Borrowings</a>
+          <a href="/profile" className="hover:underline">Profile</a>
+        </nav>
+      </header>
+      <main className="flex-grow p-8 flex">
+        <div className="w-1/3 bg-gray-100 p-4">
+          <img src="/path/to/image.jpg" alt="Product Image" className="w-full h-64 object-cover" />
           <div className="mt-4">
             <h3 className="text-lg font-bold">Description</h3>
             <p>Product description goes here.</p>
@@ -26,10 +33,11 @@ export default function ProductPage() {
           <Review reviews={reviews} />
         </div>
         <div className="w-1/3 px-4">
-          <ProductDetails name="Product Name" price={20} transactionTime="2 hours" />
-          <Transaction />
-          <div className="flex space-x-4 mt-4">
-            <ActionButtons />
+          <h2 className="text-2xl font-bold">Product Name</h2>
+          <p className="text-lg">Price: $20/hour</p>
+          <p>Transaction Time: 2 hours</p>
+          <div className="mt-4">
+            <label>From</label>
           </div>
         </div>
         <div className="w-1/3">
