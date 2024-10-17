@@ -4,6 +4,7 @@
 /node_modules
 /.pnp
 .pnp.js
+handyShare/frontend/.gitignore
 
 # testing
 /coverage
