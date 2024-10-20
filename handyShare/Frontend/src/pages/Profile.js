@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Button, Space, Layout, Menu, Form, Input } from 'antd';
+import { Button, Layout, Menu, Form, Input } from 'antd';
 import ProfileHeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar'; 
-import defaultImage from './defaultProfileImage.png'; 
+import defaultImage from '../components/ProfileUpdatePage/defaultProfileImage.png'; 
 import { useNavigate } from 'react-router-dom'; 
 
 const { Header, Content, Sider } = Layout;
@@ -40,7 +40,7 @@ const Profile = () => {
   return (
     <Layout>
       <Header>
-        <ProfileHeaderBar />
+        <ProfileHeaderBar/>
       </Header>
       <Layout>
         <Sider width={200}>

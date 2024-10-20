@@ -1,8 +1,7 @@
-// ProfileHeaderBar.js
 import React from 'react';
 import { Button, Space, Layout } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
-import logo from '../ProfileUpdatePage/HandyShareLogo.png';
+import { Link } from 'react-router-dom';
 
 const { Header } = Layout;
 
@@ -13,21 +12,20 @@ const ProfileHeaderBar = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#fff',
-        padding: '0 20px',
-        boxShadow: '0 2px 8px #f0f1f2',
-        height: '70px', 
-        width : '100%',
-        margin: '0'
+        backgroundColor: '#3B7BF8',
+        height: '100%', 
+        width: '100vw', 
       }}
     >
       {/* Logo */}
       <div style={{ display: 'flex', alignItems: 'center' }}>
-        <img
-          src= {logo}
+      <Link to="/homepage">
+      <img
+          src="/Assets/Logo.png"
           alt="App logo"
-          style={{ height: '50px', marginRight: '20px', objectFit: 'contain' }}
+          style={{ height: '40px', marginRight: '30px' }}
         />
+        </Link>
       </div>
 
       {/* Right side buttons */}

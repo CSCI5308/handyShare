@@ -9,12 +9,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/api/v1")
 
 //API starting with /all are accessible by all.
 //API starting with /user are accessible by user and admin both.
 //API starting with /admin are accessible by admin only.
+
+@RestController
+@RequestMapping("/api/v1")
 @CrossOrigin(origins = "*")
 public class UserController {
 
@@ -43,7 +44,7 @@ public class UserController {
 
     
 
-    @GetMapping("/admin/getUser") //Api accessible by the ADMIN only
+    @GetMapping("/all/admin/getUser") //Api accessible by the ADMIN only
     public ResponseEntity<List<User>> getUsers() {
         List<User> users = userService.getAllUsers();
         return ResponseEntity.ok().body(users);

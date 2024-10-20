@@ -8,6 +8,11 @@ import Profile from './pages/Profile';
 import ProfileUpdate from './pages/ProfileUpdate';
 import AdminDashboard from './pages/AdminDashboard.js';
 import ProductPage from './pages/ProductPage.js';
+import LendPage from './pages/LendPage.js';
+import ProductsListPage from './pages/ProductsList.js';
+import Payment from './pages/Payment.js';
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import Feedback from './pages/Feedback.js';
 
 function App() {
   return (
@@ -16,12 +21,7 @@ function App() {
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/homepage" element={<HomeScreen />} /> 
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/profile-update" element={<ProfileUpdate />} />
-      <Route path="/admin" element={<AdminDashboard />} />
-      <Route path="/product-page" element={<ProductPage />} />
-    </Routes>
+
   );
 }
 

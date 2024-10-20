@@ -36,7 +36,7 @@ const HeaderBar = () => {
       {/* Right side buttons */}
       <Space>
         <Button
-        href='/login'
+        href='/lend'
         >Lendings</Button>
         <Button>Borrowings</Button>
         <Button

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Table, Button, Modal, Input, message, Switch, Tooltip } from 'antd';
 import { DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import axios from 'axios';
-import { SERVER_URL } from '../../constants';
+// import { SERVER_URL_CATEGORIES } from '../../constants';
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
@@ -21,7 +21,7 @@ const Categories = () => {
   // Fetch categories from API
   const fetchCategories = async () => {
     try {
-      const response = await axios.get(SERVER_URL + "/api/v1/categories/allCategories");
+      const response = await axios.get("http://localhost:8080/api/v1/all/allCategories");
       setCategories(response.data);
       setFilteredCategories(response.data); // Initialize filtered categories
     } catch (error) {
@@ -70,11 +70,11 @@ const Categories = () => {
     try {
       if (editMode) {
         // Update category
-        await axios.put(`${SERVER_URL}/api/v1/categories/${selectedCategory.categoryId}`, newCategory);
+        await axios.put(`http://localhost:8080/api/v1/all/${selectedCategory.categoryId}`, newCategory);
         message.success('Category updated successfully');
       } else {
         // Create new category
-        await axios.post(`${SERVER_URL}/api/v1/categories`, newCategory);
+        await axios.post(`http://localhost:8080/api/v1/all/create`, newCategory);
         message.success('Category added successfully');
       }
   
@@ -91,7 +91,7 @@ const Categories = () => {
   // Delete category
   const handleDelete = async (categoryId) => {
     try {
-      await axios.delete(SERVER_URL + `/api/v1/categories/${categoryId}`);
+      await axios.delete(`http://localhost:8080/api/v1/all/${categoryId}`);
       message.success('Category deleted successfully');
       fetchCategories();
     } catch (error) {

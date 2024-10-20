@@ -34,7 +34,6 @@ export default function Login() {
         navigate('/dashboard'); // Redirect to the dashboard after successful login
       } else {
         // Handle login error
-        const errorMsg = await response.text();
         setError('Login failed. Please check your email and password.');
       }
     } catch (error) {

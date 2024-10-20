@@ -1,5 +1,6 @@
 package com.g02.handyShare.Product.Controller;
 
+import com.g02.handyShare.Category.Entity.Category;
 import com.g02.handyShare.Product.Entity.Product;
 import com.g02.handyShare.Product.Service.ProductService;
 import jakarta.validation.Valid;
@@ -13,7 +14,8 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/products")
+@RequestMapping("/api/v1/all/products")
+@CrossOrigin(origins = "*")
 public class ProductController {
     @Autowired
     private ProductService productService;
@@ -33,9 +35,14 @@ public class ProductController {
         return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
     }
 
-    @GetMapping("/products/{id}")
+    @GetMapping("/{id}")
     public Product viewProductById(@PathVariable Long id){
         return productService.getProductById(id);
+    }
+
+    @GetMapping("/allProducts")
+    public List<Product> getAllCategories() {
+        return productService.getAllProducts();
     }
 
     @DeleteMapping("/delete/{id}")

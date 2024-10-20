@@ -24,7 +24,7 @@ public class CategoryController {
   @Autowired
     private CategoryService categoryService ;
 
-    @PostMapping
+    @PostMapping("/all/create")
     public ResponseEntity<Category> createCategory(@RequestBody Map<String, Object> categoryData) {
         Category category = new Category();
         category.setName((String) categoryData.get("name"));
@@ -63,17 +63,20 @@ public class CategoryController {
 
     @GetMapping("/all/allCategories")
     public List<Category> getAllCategories() {
-        return categoryService.getAllCategories();
+        System.out.println("Fetching all categories");
+        List<Category> categories = categoryService.getAllCategories();
+        System.out.println("Found " + categories.size() + " categories");
+        return categories;
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/all/{id}")
     public ResponseEntity<Category> updateCategory(@PathVariable(value = "id") Long categoryId,
                                                    @RequestBody Category categoryDetails) {
         Category updatedCategory = categoryService.updateCategory(categoryId, categoryDetails);
         return ResponseEntity.ok(updatedCategory);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/all/{id}")
     public ResponseEntity<?> deleteCategory(@PathVariable(value = "id") Long categoryId) {
         categoryService.deleteCategory(categoryId);
         return ResponseEntity.ok().build();
