@@ -4,6 +4,7 @@ import com.g02.handyShare.Category.DTO.ProductIDRequest;
 import com.g02.handyShare.Category.Entity.Trending;
 import com.g02.handyShare.Category.Service.TrendingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +20,7 @@ public class TrendingController {
 
     @GetMapping("all/getTrendingByCategory")
     public ResponseEntity<?> getTrendingByCategory(@RequestParam String category) {
-        return ResponseEntity.ok().body(service.fetchTrendingsByCategory(category));
+         return ResponseEntity.ok().body(service.fetchTrendingsByCategory(category));
     }
 
     @PostMapping("/addToTrending")   //This API should be accesible by ADMIN only

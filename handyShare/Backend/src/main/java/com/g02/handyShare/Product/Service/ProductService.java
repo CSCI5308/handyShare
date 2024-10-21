@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,23 +23,23 @@ public class ProductService {
     }
 
     //update product entries
-    public Product updateProduct(Long id, Product updatedProduct){
-        Optional<Product> existingProductOptional=productRepository.findById(id);
-
-        if (existingProductOptional.isPresent()){
-            Product existingProduct=existingProductOptional.get();
-            //update fields
-            existingProduct.setName(updatedProduct.getName());
-            existingProduct.setDescription(updatedProduct.getDescription());
-            existingProduct.setCategory(updatedProduct.getCategory());
-            existingProduct.setRentalPrice(updatedProduct.getRentalPrice());
-            existingProduct.setAvailable(updatedProduct.getAvailable());
-
-            return productRepository.save(existingProduct);
-        }else{
-            throw new CustomException("Product not found with id: "+ id);
-        }
-    }
+//    public Product updateProduct(Long id, Product updatedProduct){
+//        Optional<Product> existingProductOptional=productRepository.findById(id);
+//
+//        if (existingProductOptional.isPresent()){
+//            Product existingProduct=existingProductOptional.get();
+//            //update fields
+//            existingProduct.setName(updatedProduct.getName());
+//            existingProduct.setDescription(updatedProduct.getDescription());
+//            existingProduct.setCategory(updatedProduct.getCategory());
+//            existingProduct.setRentalPrice(updatedProduct.getRentalPrice());
+//            existingProduct.setAvailable(updatedProduct.getAvailable());
+//
+//            return productRepository.save(existingProduct);
+//        }else{
+//            throw new CustomException("Product not found with id: "+ id);
+//        }
+//    }
 
     public Product getProductById(Long id){
         return productRepository.findById(id)
@@ -58,4 +59,3 @@ public class ProductService {
             return false;
         }
     }
-}

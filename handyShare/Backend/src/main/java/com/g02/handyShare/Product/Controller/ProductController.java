@@ -14,7 +14,8 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/all/products")
+@RequestMapping("/api/v1/all")
+
 @CrossOrigin(origins = "*")
 public class ProductController {
     @Autowired
@@ -29,11 +30,11 @@ public class ProductController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product){
-        Product updatedProduct=productService.updateProduct(id, product);
-        return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
-    }
+//    @PutMapping("/update/{id}")
+//    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product){
+//        Product updatedProduct=productService.updateProduct(id, product);
+//        return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
+//    }
 
     @GetMapping("/{id}")
     public Product viewProductById(@PathVariable Long id){
@@ -54,4 +55,4 @@ public class ProductController {
             return ResponseEntity.status(404).body("Product ID does not exist!");
         }
     }
-}
+
