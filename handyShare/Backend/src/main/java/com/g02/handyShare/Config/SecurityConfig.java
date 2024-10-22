@@ -26,20 +26,22 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder(12);
     }
 
+    
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(customizer -> customizer.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/signup", "/api/v1/all/**").permitAll()  // Permit these endpoints
-                        .requestMatchers("/api/v1/admin/**").hasAuthority("admin")  // Only accessible by users with ADMIN role
-                        .requestMatchers("/api/v1/user/**").hasAuthority("user")    // Only accessible by users with USER role
-                        .anyRequest().authenticated()  // All other endpoints need authentication
+                        .requestMatchers("/signup", "/api/v1/all/**").permitAll()
+                        .requestMatchers("/api/v1/admin/**").hasAuthority("admin")
+                        .requestMatchers("/api/v1/user/**").hasAuthority("user")
+                        .anyRequest().authenticated() 
                 )
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
     }
+   
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
