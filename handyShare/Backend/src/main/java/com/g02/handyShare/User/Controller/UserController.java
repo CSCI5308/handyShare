@@ -5,6 +5,8 @@ import com.g02.handyShare.Config.Jwt.JwtUtil;
 import com.g02.handyShare.User.Entity.User;
 import com.g02.handyShare.User.Repository.UserRepository;
 import com.g02.handyShare.User.Service.UserService;
+
+import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,10 +28,14 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
  @Autowired
     CustomUserDetailsService customUserDetailsService;
+    
     @Autowired
     UserRepository repo;
+
+
 
 
      @Autowired
@@ -76,6 +82,18 @@ public class UserController {
         return ResponseEntity.badRequest().body("Invalid or expired token.");
     }
 
-    
+    @PostMapping("/all/login")
+    public ResponseEntity<String> login(@RequestBody User user) {
+        try{
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
+            UserDetails userDetails = customUserDetailsService.loadUserByUsername(user.getEmail());
+            String jwt = jwtUtil.generateToken(userDetails.getUsername());
+            return  ResponseEntity.ok().body(jwt);
+        }catch (Exception e){
+           System.out.println("Error "+ e);
+            return ResponseEntity.ok().body("Bad credentials!");
+        }
+    }
 
 }

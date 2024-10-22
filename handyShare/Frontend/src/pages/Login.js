@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios'; // Import axios
 import InputField from "../components/Input-field.js";
 import Button from '../components/Button.js';
 import { Link, useNavigate } from 'react-router-dom';
@@ -12,32 +13,42 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Prepare login data
-    const loginData = new URLSearchParams({
-      'username': email,
-      'password': password,
-    });
+    // Prepare login data as a JavaScript object
+    const loginData = {
+      email: email,
+      password: password,
+    };
 
     try {
-      const response = await fetch('http://localhost:8080/api/v1/all/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',  // Use this for form login
-        },
-        body: loginData,
-        credentials: 'include', // Ensures cookies are sent for session-based auth
-      });
+      // Axios POST request
+      const response = await axios.post('http://localhost:8080/api/v1/all/login', loginData);
 
-      if (response.ok) {
-        // On successful login
-        console.log('Login successful');
-        navigate('/dashboard'); // Redirect to the dashboard after successful login
+      if (response.status === 200) {
+        const token = response.data; // Assuming the token is returned in the response data
+        console.log('Login successful. Token:', token);
+
+        // Check if the token is "Bad credentials!"
+        if (token === "Bad credentials!") {
+          setError('Invalid email or password. Please try again.');
+          return; // Do not proceed to navigate if login fails
+        }
+
+        // Save the JWT token (you can use localStorage or cookies)
+        localStorage.setItem('token', token);
+        console.log(token);
+
+        // Redirect to the homepage after successful login
+        navigate('/homepage');
       } else {
-        // Handle login error
         setError('Login failed. Please check your email and password.');
       }
     } catch (error) {
-      setError('An error occurred during login. Please try again.');
+      // Handle error
+      if (error.response && error.response.status === 401) {
+        setError('Invalid email or password. Please try again.');
+      } else {
+        setError('An error occurred during login. Please try again.');
+      }
     }
   };
 
