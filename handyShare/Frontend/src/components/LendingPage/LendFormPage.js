@@ -157,7 +157,7 @@ const LendFormTabs = ({ selectedCategory }) => {
 
   const handleSubmit = async () => {
     try {
-      const response = await axios.post('http://localhost:8080/api/v1/lending/item', formData);
+      const response = await axios.post('http://localhost:8080/api/v1/all/lending/item', formData);
       console.log(response.data);
       message.success('Item listed successfully');
       // Optionally, reset form or redirect user

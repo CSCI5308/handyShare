@@ -16,7 +16,8 @@ const LendPage = () => {
   useEffect(() => {
     const fetchLentItems = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/v1/lending/items');
+        const response = await axios.get('http://localhost:8080/api/v1/all/lending/items');
+        setLentItems(response.data); // Add this line to set the fetched data
         setLoading(false);
       } catch (error) {
         console.error('Error fetching lent items:', error);
