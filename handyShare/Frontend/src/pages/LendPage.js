@@ -90,7 +90,7 @@ const LendPage = () => {
       title: 'Price (per hour)',
       dataIndex: 'price',
       key: 'price',
-      render: (price) => `$${price.toFixed(2)}`,
+      render: (price) => price ? `$${price.toFixed(2)}` : '$0.00',
     },
     {
       title: 'Availability',
