@@ -47,8 +47,8 @@ const LendPage = () => {
   };
 
   const handleModalCancel = () => {
-    setIsModalVisible(false);
     setEditingItem(null);
+    setIsModalVisible(false);
   };
 
   const handleUpdate = async (updatedItem) => {
@@ -56,7 +56,6 @@ const LendPage = () => {
       await axios.put(`http://localhost:8080/api/v1/all/lending/item/${updatedItem.id}`, updatedItem);
       message.success('Item updated successfully');
       setIsModalVisible(false);
-      setEditingItem(null);
       fetchLentItems();
     } catch (error) {
       console.error('Error updating item:', error);
@@ -64,9 +63,21 @@ const LendPage = () => {
     }
   };
 
+  const handleAdd = async (newItem) => {
+    try {
+      await axios.post('http://localhost:8080/api/v1/all/lending/item', newItem);
+      message.success('Item added successfully');
+      setView('lendings');
+      fetchLentItems();
+    } catch (error) {
+      console.error('Error adding item:', error);
+      message.error('Failed to add item');
+    }
+  };
+
   const columns = [
     {
-      title: 'Item Name',
+      title: 'Name',
       dataIndex: 'name',
       key: 'name',
     },
@@ -89,7 +100,7 @@ const LendPage = () => {
     {
       title: 'Actions',
       key: 'actions',
-      render: (text, record) => (
+      render: (_, record) => (
         <>
           <Button type="link" onClick={() => handleEdit(record)}>Edit</Button>
           <Button type="link" danger onClick={() => handleDelete(record.id)}>Delete</Button>
@@ -128,9 +139,15 @@ const LendPage = () => {
                   loading={loading} 
                   rowKey="id" 
                 />
+                <Button type="primary" onClick={() => setView('newLending')} style={{ marginTop: '20px' }}>
+                  Add New Item
+                </Button>
               </>
             ) : (
-              <LendFormPage onProductAdded={fetchLentItems} />
+              <LendFormPage 
+                onProductAdded={handleAdd} 
+                onCancel={() => setView('lendings')} 
+              />
             )}
           </Content>
         </Layout>
