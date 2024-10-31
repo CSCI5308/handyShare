@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import HeaderBar from '../components/Homepage/HeaderBar.js'; 
+import HeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar';  
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { message } from 'antd';
