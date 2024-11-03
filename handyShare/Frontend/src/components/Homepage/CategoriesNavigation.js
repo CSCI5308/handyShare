@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
 import { Button } from 'antd';
+import { SERVER_URL } from '../../constants';
 
 export default function CategoriesNavigation({ onCategorySelect }) { 
     const [categories, setCategories] = useState([]);
@@ -12,7 +13,7 @@ export default function CategoriesNavigation({ onCategorySelect }) {
             console.log(token)
             
             try {
-                const response = await axios.get("http://localhost:8080/api/v1/user/allCategories", {
+                const response = await axios.get(SERVER_URL+"/api/v1/user/allCategories", {
                     headers: {
                        
                         Authorization: `Bearer ${token}`

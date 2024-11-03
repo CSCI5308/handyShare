@@ -14,6 +14,7 @@ import Payment from './pages/Payment.js';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import Feedback from './pages/Feedback.js';
 import RentSummaryPage from './pages/RentSummaryPage.js';
+import OAuth2RedirectHandler from "../src/components/ProfileUpdatePage/OAuth2RedirectHandler.js"
 
 function App() {
   return (
@@ -32,6 +33,8 @@ function App() {
       <Route path="/payment" element={<Payment/>} />
       <Route path="/feedback" element={<Feedback/>} />
       <Route path="/rent-summary" element={<RentSummaryPage/>} />
+      <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler/>}/>
+
     </Routes>
   );
 }

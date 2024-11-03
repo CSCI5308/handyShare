@@ -1,11 +1,33 @@
 import React from 'react';
-import { Button, Space, Layout } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import { Button, Space, Layout, Dropdown, Menu, message } from 'antd';
+import { UserOutlined, DownOutlined } from '@ant-design/icons';
+import { Link, useNavigate } from 'react-router-dom';
 
 const { Header } = Layout;
 
 const ProfileHeaderBar = () => {
+  const navigate = useNavigate();
+
+  // Function to handle sign out
+  const handleSignOut = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role'); 
+
+    message.success('Successfully signed out');
+    navigate('/login'); 
+  };
+
+  const menu = (
+    <Menu>
+      <Menu.Item key="profile" onClick={() => navigate('/profile')}>
+        Profile
+      </Menu.Item>
+      <Menu.Item key="signout" onClick={handleSignOut}>
+        Sign Out
+      </Menu.Item>
+    </Menu>
+  );
+
   return (
     <Header
       style={{
@@ -19,26 +41,29 @@ const ProfileHeaderBar = () => {
     >
       {/* Logo */}
       <div style={{ display: 'flex', alignItems: 'center' }}>
-      <Link to="/homepage">
-      <img
-          src="/Assets/Logo.png"
-          alt="App logo"
-          style={{ height: '40px', marginRight: '30px' }}
-        />
+        <Link to="/homepage">
+          <img
+            src="/Assets/Logo.png"
+            alt="App logo"
+            style={{ height: '40px', marginRight: '30px' }}
+          />
         </Link>
       </div>
 
       {/* Right side buttons */}
       <Space>
-        <Button>Lendings</Button>
+        <Button href='/lend'>Lendings</Button>
         <Button>Borrowings</Button>
-        <Link to='/profile'>
-        <Button
-          type="primary"
-          shape="circle"
-          icon={<UserOutlined />}
-        />
-        </Link>
+        
+        {/* Dropdown for Profile and Sign Out */}
+        <Dropdown overlay={menu} trigger={['click']}>
+          <Button
+            type="primary"
+            shape="circle"
+            icon={<UserOutlined />}
+          >
+          </Button>
+        </Dropdown>
       </Space>
     </Header>
   );

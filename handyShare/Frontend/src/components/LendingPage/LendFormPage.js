@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Upload, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
-import { Select, Steps } from 'antd';
-import { SERVER_URL } from '../../config';
+
 const { Step } = Steps;
 const { Option } = Select;
 
@@ -29,12 +28,7 @@ const LendFormPage = ({ onProductAdded }) => {
     const fetchCategories = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`${SERVER_URL}/api/v1/user/allCategories`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          },
-          withCredentials: true
-        });
+
 
         setCategories(response.data.map(cat => cat.name));
       } catch (error) {

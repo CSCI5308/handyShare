@@ -1,6 +1,6 @@
 import React from 'react';
-import HeaderBar from '../components/Homepage/HeaderBar';
-import FeedbackForm from '../components/Feedback/FeedbackForm'; // Import the feedback form
+import HeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar.js';
+import FeedbackForm from '../components/Feedback/FeedbackForm'; 
 import { Layout } from 'antd';
 
 const { Header, Content, Footer } = Layout;

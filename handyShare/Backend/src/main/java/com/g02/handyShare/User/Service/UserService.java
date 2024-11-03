@@ -1,5 +1,6 @@
 package com.g02.handyShare.User.Service;
 
+import com.g02.handyShare.Constants;
 import com.g02.handyShare.User.Entity.User;
 import com.g02.handyShare.User.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +18,13 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private EmailService emailService; // Injecting EmailService
+
+    @Autowired
+    private Constants constants;
 
     public String registerUser(User user) {
         // Check if email already exists
@@ -38,7 +42,7 @@ public class UserService {
         user.setVerificationToken(token); // Set the token in user entity
 
         // Create verification link
-        String verificationLink = "http://localhost:8080/api/v1/all/verifyUser?token=" + token;
+        String verificationLink = constants.SERVER_URL+"/api/v1/all/verifyUser?token=" + token;
 
         // Send the email to the user to verify
         String response = emailService.sendEmail(user.getEmail(), "Verify your email", verificationLink);
