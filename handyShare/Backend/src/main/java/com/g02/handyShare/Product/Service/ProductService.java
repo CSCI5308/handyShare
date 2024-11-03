@@ -26,6 +26,7 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
     private FirebaseService firebaseService;
 
     @Autowired
@@ -51,7 +52,11 @@ public class ProductService {
             tobeSaved.setCategory(product.getCategory());
             tobeSaved.setDescription(product.getDescription());
             tobeSaved.setProductImage(imageUrl);
-            tobeSaved.setRentalPrice(product.getRentalPrice());
+            try {
+                tobeSaved.setRentalPrice(Double.valueOf(product.getRentalPrice()));
+            } catch (NumberFormatException e) {
+                return ResponseEntity.badRequest().body("Invalid price format");
+            }
             tobeSaved.setName(product.getName());
             tobeSaved.setUserId(owner);
             Product saved = productRepository.save(tobeSaved);

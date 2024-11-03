@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import HeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar.js';
 import LendFormPage from '../components/LendingPage/LendFormPage.js'; 
+import EditLendForm from '../components/LendingPage/EditLendForm.js'; 
 import { Layout, Menu, Table, Button, Modal, message } from 'antd';
 import axios from 'axios';
+import { SERVER_URL } from '../constants.js';
 
 const { Content, Sider } = Layout;
 
@@ -20,7 +22,13 @@ const LendPage = () => {
   const fetchLentItems = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('http://localhost:8080/api/v1/all/lending/items');
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${SERVER_URL}/api/v1/all/lending/items`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        withCredentials: true
+      });
       setLentItems(response.data);
     } catch (error) {
       console.error('Error fetching lent items:', error);
@@ -32,7 +40,13 @@ const LendPage = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:8080/api/v1/all/lending/item/${id}`);
+      const token = localStorage.getItem('token');
+      await axios.delete(`${SERVER_URL}/api/v1/all/lending/item/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        withCredentials: true
+      });
       message.success('Item deleted successfully');
       fetchLentItems();
     } catch (error) {
@@ -49,16 +63,30 @@ const LendPage = () => {
   const handleModalCancel = () => {
     setEditingItem(null);
     setIsModalVisible(false);
+    setEditingItem(null);
   };
 
-  const handleUpdate = async (updatedItem) => {
+  const handleUpdate = async (formData) => {
+    if (!editingItem || !editingItem.id) {
+      message.error('Invalid item data.');
+      return;
+    }
     try {
-      await axios.put(`http://localhost:8080/api/v1/all/lending/item/${updatedItem.id}`, updatedItem);
+      const token = localStorage.getItem('token');
+      console.log('Updating item with ID:', editingItem.id); // Debugging log
+      console.log('FormData:', formData); // Debugging log
+      await axios.put(`${SERVER_URL}/api/v1/all/lending/item/${editingItem.id}`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        },
+        withCredentials: true
+      });
       message.success('Item updated successfully');
       setIsModalVisible(false);
       fetchLentItems();
     } catch (error) {
-      console.error('Error updating item:', error);
+      console.error('Error updating item:', error.response || error);
       message.error('Failed to update item');
     }
   };
@@ -80,22 +108,6 @@ const LendPage = () => {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-    },
-    {
-      title: 'Description',
-      dataIndex: 'description',
-      key: 'description',
-    },
-    {
-      title: 'Price (per hour)',
-      dataIndex: 'price',
-      key: 'price',
-      render: (price) => price ? `$${price.toFixed(2)}` : '$0.00',
-    },
-    {
-      title: 'Availability',
-      dataIndex: 'availability',
-      key: 'availability',
     },
     {
       title: 'Actions',
@@ -120,34 +132,33 @@ const LendPage = () => {
         <Sider width={200}>
           <Menu
             mode="inline"
-            defaultSelectedKeys={['lendings']}
-            style={{ height: '100%', borderRight: 0 }}
+            selectedKeys={[view]}
             onClick={handleMenuClick}
+            style={{ height: '100%', borderRight: 0 }}
           >
             <Menu.Item key="lendings">Lendings</Menu.Item>
-            <Menu.Item key="newLending">New Lending</Menu.Item>
+            <Menu.Item key="add">Add New Lending</Menu.Item>
           </Menu>
         </Sider>
-        <Layout style={{ padding: '20px' }}>
-          <Content style={{ padding: '20px', background: '#fff' }}>
-            {view === 'lendings' ? (
-              <>
-                <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '10px' }}>Your Lent Items</h1>
-                <Table 
-                  columns={columns} 
-                  dataSource={lentItems} 
-                  loading={loading} 
-                  rowKey="id" 
-                />
-                <Button type="primary" onClick={() => setView('newLending')} style={{ marginTop: '20px' }}>
-                  Add New Item
-                </Button>
-              </>
-            ) : (
-              <LendFormPage 
-                onProductAdded={handleAdd} 
-                onCancel={() => setView('lendings')} 
+        <Layout style={{ padding: '0 24px 24px' }}>
+          <Content
+            className="site-layout-background"
+            style={{
+              padding: 24,
+              margin: 0,
+              minHeight: 280,
+            }}
+          >
+            {view === 'lendings' && (
+              <Table 
+                columns={columns} 
+                dataSource={lentItems} 
+                rowKey="id" 
+                loading={loading} 
               />
+            )}
+            {view === 'add' && (
+              <LendFormPage onProductAdded={fetchLentItems} />
             )}
           </Content>
         </Layout>
@@ -161,11 +172,10 @@ const LendPage = () => {
         footer={null}
       >
         {editingItem && (
-          <LendFormPage 
+          <EditLendForm 
             item={editingItem} 
             onUpdate={handleUpdate} 
             onCancel={handleModalCancel} 
-            isEditing={true} 
           />
         )}
       </Modal>
