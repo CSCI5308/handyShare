@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Upload, message } from 'antd';
+import { Form, Input, Button, Upload, message, Steps, Select } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
-import { SERVER_URL } from '../../constants';
+import { SERVER_URL } from '../../config';
 
 const { Step } = Steps;
 const { Option } = Select;
 
 const LendFormPage = ({ onProductAdded }) => {
-  const [currentStep, setCurrentStep] = useState(0); // Start at first step for adding
+  const [currentStep, setCurrentStep] = useState(0);
   const [form] = Form.useForm();
   const [formData, setFormData] = useState({
     name: '',
@@ -29,16 +29,12 @@ const LendFormPage = ({ onProductAdded }) => {
     const fetchCategories = async () => {
       try {
         const token = localStorage.getItem('token');
-            const response = await axios.get(SERVER_URL+"/api/v1/user/allCategories", {
-                headers: {
-                   
-                    Authorization: `Bearer ${token}`
-                },
-                withCredentials: true
-
-            });
-
-        // const response = await axios.get(SERVER_URL+"/api/v1/all/allCategories");
+        const response = await axios.get(`${SERVER_URL}/api/v1/user/allCategories`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
+          withCredentials: true
+        });
 
         setCategories(response.data.map(cat => cat.name));
       } catch (error) {
