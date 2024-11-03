@@ -33,12 +33,12 @@ public class FirebaseService {
         // Initialize Firebase Storage
         Storage storage = StorageOptions.newBuilder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                .setProjectId("handyshare-b3506")
+                .setProjectId("handyshare-firebase")
                 .build()
                 .getService();
 
         // Create BlobId with the specified folder path
-        BlobId blobId = BlobId.of("handyshare-b3506.appspot.com", path + "/" + objectName);
+        BlobId blobId = BlobId.of("handyshare-firebase.appspot.com", path + "/" + objectName);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
                 .setContentType(multipartFile.getContentType())
                 .build();
@@ -50,7 +50,7 @@ public class FirebaseService {
         storage.get(blobId).createAcl(Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
 
         // Construct the public URL
-        String publicUrl = String.format("https://storage.googleapis.com/%s/%s", "handyshare-b3506.appspot.com", path + "/" + objectName);
+        String publicUrl = String.format("https://storage.googleapis.com/%s/%s", "handyshare-firebase.appspot.com", path + "/" + objectName);
 
         // Optionally, delete the temporary file after upload
         file.delete();
@@ -83,12 +83,12 @@ public class FirebaseService {
         // Initialize the Firebase Storage
         Storage storage = StorageOptions.newBuilder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                .setProjectId("handyshare-b3506")
+                .setProjectId("handyshare-firebase")
                 .build()
                 .getService();
 
         // Retrieve the file from storage
-        Blob blob = storage.get("handyshare-b3506.appspot.com", path);
+        Blob blob = storage.get("handyshare-firebase.appspot.com", path);
         if (blob == null || !blob.exists()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }

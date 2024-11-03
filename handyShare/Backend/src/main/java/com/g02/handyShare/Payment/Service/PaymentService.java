@@ -21,9 +21,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class PaymentService {
 
-  public PaymentService(@Value("${STRIPE_SECRET_KEY}") String secretKey) {
-    Stripe.apiKey = secretKey; // Set the Stripe secret key
-}
+  // Hardcoded Stripe Secret Key
+  private static final String STRIPE_SECRET_KEY = "sk_test_51QCMlpCj4cfMdtSgvGv3Y949jGNTGjZbSWHD6GKUJ0hczCCQ8f5SPtX91LqFA4RLPn96F4KsoG8mwjwPEmwEafUf00wIvarU3p";  // Replace with your actual secret key
+
+  public PaymentService() {
+      Stripe.apiKey = STRIPE_SECRET_KEY;  // Set the Stripe secret key directly
+  }
+
+//   public PaymentService(@Value("${STRIPE_SECRET_KEY}") String secretKey) {
+//     Stripe.apiKey = secretKey; // Set the Stripe secret key
+// }
 
 public Map<String, Object> createPaymentIntent(PaymentRequest paymentRequest) throws Exception {
     // ChargeCreateParams params = ChargeCreateParams.builder()

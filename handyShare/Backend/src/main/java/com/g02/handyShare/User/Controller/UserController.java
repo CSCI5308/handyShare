@@ -6,15 +6,23 @@ import com.g02.handyShare.User.Entity.User;
 import com.g02.handyShare.User.Repository.UserRepository;
 import com.g02.handyShare.User.Service.UserService;
 
+import io.jsonwebtoken.lang.Arrays;
+
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 //API starting with /all are accessible by all.
@@ -83,23 +91,31 @@ public class UserController {
     }
 
     @PostMapping("/all/login")
-    public ResponseEntity<String> login(@RequestBody User user) {
-        try{
+    public ResponseEntity<Map<String, String>> login(@RequestBody User user) {
+        try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
+                new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword())
+            );
+            
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(user.getEmail());
-
             String jwt = jwtUtil.generateToken(userDetails.getUsername());
-        User existingUser = repo.findByEmail(userDetails.getUsername());
-       
-        if(existingUser.is_email_verified()){
-            return  ResponseEntity.ok().body(jwt);
-        }
-        return  ResponseEntity.badRequest().body("Verify email first");   
-        }catch (Exception e){
-           System.out.println("Error "+ e);
-            return ResponseEntity.ok().body("Bad credentials!");
+            User existingUser = repo.findByEmail(userDetails.getUsername());
+
+            if (!existingUser.is_email_verified()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Verify email first"));
+            }
+
+            // Send back role information along with the JWT token
+            Map<String, String> responseBody = new HashMap<>();
+            responseBody.put("token", jwt);
+            responseBody.put("role", existingUser.getRole()); // Adding role to the response
+
+            return ResponseEntity.ok().body(responseBody);
+        } catch (Exception e) {
+            System.out.println("Error: " + e);
+            return ResponseEntity.status(HttpStatus.SC_UNAUTHORIZED).body(Map.of("error", "Bad credentials!"));
         }
     }
 
 }
+

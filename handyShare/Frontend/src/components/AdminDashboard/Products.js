@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, Table, Input, message, Modal, Switch, Select } from 'antd';
 import { DeleteOutlined, SearchOutlined } from '@ant-design/icons';
 import axios from 'axios';
+import { SERVER_URL } from '../../constants';
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -22,7 +23,7 @@ const Products = () => {
   const fetchProducts = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get("http://localhost:8080/api/v1/user/allProducts",{
+      const response = await axios.get(SERVER_URL+"/api/v1/user/allProducts",{
       
         headers: {
                    

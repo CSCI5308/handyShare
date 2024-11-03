@@ -16,6 +16,19 @@ const LendPage = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
+
+    const fetchLentItems = async () => {
+      try {
+        const response = await axios.get(SERVER_URL+"/api/v1/all/lending/items")
+        setLentItems(response.data); // Add the fetched data
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching lent items:', error);
+        message.error('Failed to load lent items');
+        setLoading(false);
+      }
+    };
+
     fetchLentItems();
   }, []);
 

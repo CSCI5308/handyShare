@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; 
 import HeaderBar from '../components/Homepage/HeaderBar.js';
 import { Layout, Button, theme } from 'antd'; 
@@ -16,6 +16,22 @@ const HomeScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState(''); 
   const navigate = useNavigate(); 
 
+  useEffect(() => {
+    // Extract token from URL query parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+
+
+    if (token) {
+      // Store the token in localStorage
+      localStorage.setItem('token', token);
+      console.log('Token stored:', token);
+
+      // Remove the token parameter from the URL for a cleaner look
+      navigate('/homepage', { replace: true });
+    }
+  }, [navigate]);
+  
   // Function to handle category selection
   const handleCategorySelect = (category) => {
     setSelectedCategory(category);
