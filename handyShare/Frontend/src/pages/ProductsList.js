@@ -1,47 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import HeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar.js';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const ProductsList = () => {
+  const navigate = useNavigate(); // useNavigate for navigation
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [filters, setFilters] = useState({ priceRange: '', availability: '', category: '' });
   const [sortOption, setSortOption] = useState('newest');
   const [searchQuery, setSearchQuery] = useState('');
-  
+
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const productsPerPage = 6; 
+  const productsPerPage = 6;
 
   useEffect(() => {
     // Fetch products and categories data from API
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem('token')
-        const productsResponse = await axios.get('http://localhost:8080/api/v1/user/allProducts',{
-        
-          headers: {
-                     
-            Authorization: `Bearer ${token}`
-        },
-        withCredentials: true
-
-        }
-      );  
-        const categoriesResponse = await axios.get('http://localhost:8080/api/v1/user/allCategories',{
-        
-            headers: {
-                       
-              Authorization: `Bearer ${token}`
-          },
-          withCredentials: true
-
-          }
-        );
+        const token = localStorage.getItem('token');
+        const productsResponse = await axios.get('http://localhost:8080/api/v1/user/allProducts', {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        });
+        const categoriesResponse = await axios.get('http://localhost:8080/api/v1/user/allCategories', {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        });
         console.log(productsResponse.data);
         setProducts(productsResponse.data);
-        setCategories(categoriesResponse.data.map(cat => cat.name)); 
+        setCategories(categoriesResponse.data.map(cat => cat.name));
       } catch (error) {
         console.error('Error fetching products or categories:', error);
       }
@@ -111,6 +100,14 @@ const ProductsList = () => {
       <HeaderBar />
       <div className="max-w-7xl mx-auto p-6">
         <h2 className="text-2xl font-semibold text-center mb-5">Items</h2>
+
+        {/* Back Button */}
+        <button
+          onClick={() => navigate(-1)} // navigate back
+          className="mb-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700"
+        >
+          Back
+        </button>
 
         <div className="flex">
           {/* Sidebar for Filters and Sorting */}

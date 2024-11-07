@@ -53,7 +53,7 @@ const ProfileHeaderBar = () => {
       {/* Right side buttons */}
       <Space>
         <Button href='/lend'>Lendings</Button>
-        <Button>Borrowings</Button>
+        <Button href='/borrow'>Borrowings</Button>
         
         {/* Dropdown for Profile and Sign Out */}
         <Dropdown overlay={menu} trigger={['click']}>
