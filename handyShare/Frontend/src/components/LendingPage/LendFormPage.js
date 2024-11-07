@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Upload, message, Steps, Select } from 'antd';
+import { Form, Input, Button, Upload, message, Steps, Select, Card, InputNumber } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
-import { SERVER_URL } from '../../config';
+import { SERVER_URL } from '../../constants.js';
 
 const { Step } = Steps;
 const { Option } = Select;
 
-const LendFormPage = ({ onProductAdded }) => {
+const LendFormPage = ({ onUpdate }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [form] = Form.useForm();
   const [formData, setFormData] = useState({
@@ -20,9 +20,11 @@ const LendFormPage = ({ onProductAdded }) => {
     pincode: '',
     address: '',
     image: null,
-    imageName: ''
+    imageName: '',
+    availability: 'Available'
   });
   const [categories, setCategories] = useState([]);
+  const [fileList, setFileList] = useState([]);
 
   // Fetch categories from API
   useEffect(() => {
@@ -36,12 +38,19 @@ const LendFormPage = ({ onProductAdded }) => {
           withCredentials: true
         });
 
-        setCategories(response.data.map(cat => cat.name));
+        // Filter out any null or undefined categories and ensure uniqueness
+        const uniqueCategories = response.data
+          .filter(category => category)
+          .map(category => category.name)
+          .filter((value, index, self) => self.indexOf(value) === index);
+
+        setCategories(uniqueCategories);
       } catch (error) {
-        console.error('Error fetching categories:', error.response || error);
+        console.error('Error fetching categories:', error);
         message.error('Failed to fetch categories');
       }
     };
+
     fetchCategories();
   }, []);
 
@@ -50,137 +59,196 @@ const LendFormPage = ({ onProductAdded }) => {
       title: 'Item Description',
       content: (
         <>
-          <Form.Item label="Category" name="category" rules={[{ required: true, message: 'Please select a category' }]}>
+          <Form.Item
+            label="Category"
+            name="category"
+            rules={[{ required: true, message: 'Please select a category' }]}
+          >
             <Select 
+              placeholder="Select a category"
               value={formData.category} 
               onChange={(value) => setFormData({ ...formData, category: value })}
             >
-              {categories.map(category => (
-                <Option key={category} value={category}>{category}</Option>
+              {categories.map((cat) => (
+                <Option key={cat} value={cat}>{cat}</Option>
               ))}
             </Select>
           </Form.Item>
-          <Form.Item label="Item Name" name="name" rules={[{ required: true, message: 'Please enter item name' }]}>
+
+          <Form.Item
+            label="Name"
+            name="name"
+            rules={[{ required: true, message: 'Please enter the name' }]}
+          >
             <Input 
               value={formData.name} 
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })} 
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             />
           </Form.Item>
-          <Form.Item label="Description" name="description">
+
+          <Form.Item
+            label="Description"
+            name="description"
+            rules={[{ required: true, message: 'Please enter the description' }]}
+          >
             <Input.TextArea 
               value={formData.description} 
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })} 
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             />
           </Form.Item>
-          <Form.Item label="Rental Price" name="price" rules={[{ required: true, message: 'Please enter price' }]}>
-            <Input 
-              type="number" 
+
+          <Form.Item
+            label="Price"
+            name="price"
+            rules={[{ required: true, message: 'Please enter the price' }]}
+          >
+            <InputNumber 
+              min={0} 
               value={formData.price} 
-              onChange={(e) => {
-                const value = e.target.value;
-                setFormData({ 
-                  ...formData, 
-                  price: value ? parseFloat(value) : 0 
-                });
-              }} 
+              onChange={(value) => setFormData({ ...formData, price: value })}
+              style={{ width: '100%' }}
             />
           </Form.Item>
+        </>
+      ),
+    },
+    {
+      title: 'Location & Address',
+      content: (
+        <>
+          <Form.Item
+            label="City"
+            name="city"
+            rules={[{ required: true, message: 'Please enter the city' }]}
+          >
+            <Input 
+              value={formData.city} 
+              onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="State"
+            name="state"
+            rules={[{ required: true, message: 'Please enter the state' }]}
+          >
+            <Input 
+              value={formData.state} 
+              onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Pincode"
+            name="pincode"
+            rules={[{ required: true, message: 'Please enter the pincode' }]}
+          >
+            <Input 
+              value={formData.pincode} 
+              onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Address"
+            name="address"
+            rules={[{ required: true, message: 'Please enter the address' }]}
+          >
+            <Input 
+              value={formData.address} 
+              onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+            />
+          </Form.Item>
+        </>
+      ),
+    },
+    {
+      title: 'Image & Availability',
+      content: (
+        <>
           <Form.Item
             label="Upload Image"
             name="image"
-            valuePropName="file"
-            rules={[{ required: false }]}
+            rules={[{ required: true, message: 'Please upload an image' }]}
           >
             <Upload
               beforeUpload={(file) => {
-                const isValidType = ['image/png', 'image/svg+xml', 'image/jpeg', 'image/jpg'].includes(file.type);
-                if (!isValidType) {
-                  message.error('You can only upload PNG, SVG, JPG, or JPEG files.');
-                  return Upload.LIST_IGNORE;
-                }
                 setFormData({ ...formData, image: file, imageName: file.name });
-                return false;
+                setFileList([file]); // Manage fileList
+                return false; // Prevent automatic upload
               }}
-              onRemove={() => setFormData({ ...formData, image: null, imageName: '' })}
-              fileList={formData.image ? [{ uid: '-1', name: formData.imageName }] : []}
+              fileList={fileList}
+              onRemove={() => {
+                setFormData({ ...formData, image: null, imageName: '' });
+                setFileList([]);
+              }}
+              listType="picture"
+              maxCount={1}
             >
               <Button icon={<UploadOutlined />}>Click to Upload</Button>
             </Upload>
           </Form.Item>
-        </>
-      ),
-    },
-    {
-      title: 'Location',
-      content: (
-        <>
-          <Form.Item label="Address" name="address" rules={[{ required: true, message: 'Please enter address' }]}>
-            <Input 
-              value={formData.address} 
-              onChange={(e) => setFormData({ ...formData, address: e.target.value })} 
-            />
-          </Form.Item>
-          <Form.Item label="City" name="city" rules={[{ required: true, message: 'Please enter city' }]}>
-            <Input 
-              value={formData.city} 
-              onChange={(e) => setFormData({ ...formData, city: e.target.value })} 
-            />
-          </Form.Item>
-          <Form.Item label="State" name="state" rules={[{ required: true, message: 'Please enter state' }]}>
-            <Input 
-              value={formData.state} 
-              onChange={(e) => setFormData({ ...formData, state: e.target.value })} 
-            />
-          </Form.Item>
-          <Form.Item label="Pincode" name="pincode" rules={[{ required: true, message: 'Please enter pincode' }]}>
-            <Input 
-              value={formData.pincode} 
-              onChange={(e) => setFormData({ ...formData, pincode: e.target.value })} 
-            />
-          </Form.Item>
-        </>
-      ),
-    },
-    {
-      title: 'Summary',
-      content: (
-        <div className="summary-container" style={{ textAlign: 'center' }}>
-          <div className="image-summary" style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
-            {formData.image ? (
-              <img
-                src={URL.createObjectURL(formData.image)}
-                alt="Uploaded item"
-                style={{ width: '200px', height: '200px', objectFit: 'cover', marginBottom: '20px' }}
-              />
-            ) : null}
-          </div>
-          <div className="item-details" style={{ marginBottom: '20px' }}>
-            <h2 style={{ fontWeight: 'bold', fontSize: '20px' }}>Item Details</h2>
-            <p><strong>Name:</strong> {formData.name}</p>
-            <p><strong>Category:</strong> {formData.category}</p>
-            <p><strong>Price:</strong> ${Number(formData.price).toFixed(2)}</p>
-            <p><strong>Description:</strong> {formData.description || 'No description provided'}</p>
-          </div>
 
-          <div className="location-details">
-            <h2 style={{ fontWeight: 'bold', fontSize: '20px' }}>Location Details</h2>
-            <p><strong>Address:</strong> {formData.address}</p>
-            <p><strong>City:</strong> {formData.city}</p>
-            <p><strong>State:</strong> {formData.state}</p>
-            <p><strong>Pincode:</strong> {formData.pincode}</p>
-          </div>
-        </div>
+          {formData.image && (
+            <div style={{ marginBottom: '16px' }}>
+              <strong>Image Preview:</strong>
+              <br />
+              <img 
+                src={URL.createObjectURL(formData.image)} 
+                alt={formData.imageName} 
+                style={{ maxWidth: '200px', marginTop: '10px' }} 
+              />
+            </div>
+          )}
+
+          <Form.Item 
+            label="Availability" 
+            name="availability" 
+            rules={[{ required: true, message: 'Please select availability' }]}
+          >
+            <Select 
+              placeholder="Select availability"
+              value={formData.availability} 
+              onChange={(value) => setFormData({ ...formData, availability: value })}
+            >
+              <Option key="Available" value="Available">Available</Option>
+              <Option key="Unavailable" value="Unavailable">Unavailable</Option>
+            </Select>
+          </Form.Item>
+        </>
       ),
     },
+    {
+      title: 'Product Summary',
+      content: (
+        <Card title="Summary" bordered={false}>
+          <p><strong>Name:</strong> {formData.name}</p>
+          <p><strong>Description:</strong> {formData.description}</p>
+          <p><strong>Price:</strong> ${formData.price}</p>
+          <p><strong>Category:</strong> {formData.category}</p>
+          <p><strong>City:</strong> {formData.city}</p>
+          <p><strong>State:</strong> {formData.state}</p>
+          <p><strong>Pincode:</strong> {formData.pincode}</p>
+          <p><strong>Address:</strong> {formData.address}</p>
+          <p><strong>Availability:</strong> {formData.availability}</p>
+          {formData.image && (
+            <div>
+              <strong>Image:</strong>
+              <br />
+              <img src={URL.createObjectURL(formData.image)} alt={formData.imageName} style={{ maxWidth: '200px', marginTop: '10px' }} />
+            </div>
+          )}
+        </Card>
+      ),
+    }
   ];
 
-  const next = async () => {
-    try {
-      await form.validateFields();
+  const next = () => {
+    form.validateFields().then(() => {
       setCurrentStep(currentStep + 1);
-    } catch (errorInfo) {
-      // Validation failed, stay on the current step
-    }
+    }).catch(info => {
+      console.log('Validate Failed:', info);
+    });
   };
 
   const prev = () => {
@@ -188,52 +256,100 @@ const LendFormPage = ({ onProductAdded }) => {
   };
 
   const handleSubmit = async () => {
+    // Ensure all required fields are present
+    if (
+      !formData.category ||
+      !formData.name ||
+      !formData.description ||
+      formData.price === null ||
+      !formData.city ||
+      !formData.state ||
+      !formData.pincode ||
+      !formData.address ||
+      !formData.availability ||
+      !formData.image
+    ) {
+      message.error('Please fill out all required fields.');
+      return;
+    }
+
     try {
+      const formToSend = new FormData();
+      formToSend.append('category', formData.category);
+      formToSend.append('name', formData.name);
+      formToSend.append('description', formData.description);
+      formToSend.append('price', formData.price);
+      formToSend.append('city', formData.city);
+      formToSend.append('state', formData.state);
+      formToSend.append('pincode', formData.pincode);
+      formToSend.append('address', formData.address);
+      formToSend.append('availability', formData.availability);
+      if (formData.image) {
+        formToSend.append('image', formData.image);
+      }
+
       const token = localStorage.getItem('token');
-      const payload = { ...formData };
-      // Handle image upload here if necessary
-      const response = await axios.post(`${SERVER_URL}/api/v1/all/lending/item`, payload, {
+
+      // eslint-disable-next-line
+      const response = await axios.post(`${SERVER_URL}/api/v1/user/lending/item`, formToSend, {
         headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data'
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`
         },
         withCredentials: true
       });
-      message.success('Item added successfully');
-      onProductAdded();
+
+      message.success('Product added successfully!');
+      onUpdate(); // Refresh the lent items list
       form.resetFields();
+      setCurrentStep(0);
       setFormData({
         name: '',
         description: '',
-        price: '',
+        price: 0,
         category: '',
         city: '',
         state: '',
         pincode: '',
         address: '',
         image: null,
-        imageName: ''
+        imageName: '',
+        availability: 'Available'
       });
-      setCurrentStep(0);
+      setFileList([]);
     } catch (error) {
-      console.error('Error adding item:', error.response || error);
-      message.error('Failed to add item');
+      console.error('Error adding product:', error.response || error);
+      if (error.response && error.response.data) {
+        if (typeof error.response.data === 'object') {
+          Object.values(error.response.data).forEach(errMsg => {
+            message.error(errMsg);
+          });
+        } else {
+          message.error(error.response.data);
+        }
+      } else {
+        message.error('Failed to add product');
+      }
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg mt-2">
+    <div>
       <Steps current={currentStep}>
         {steps.map(item => (
           <Step key={item.title} title={item.title} />
         ))}
       </Steps>
-      <div className="steps-content mt-6">
-        <Form form={form}>
-          {steps[currentStep].content}
-        </Form>
-      </div>
-      <div className="steps-action mt-4">
+
+      <Form
+        form={form}
+        layout="vertical"
+        style={{ marginTop: '20px' }}
+      >
+        {steps[currentStep].content}
+      </Form>
+
+      <div style={{ marginTop: 24 }}>
         {currentStep < steps.length - 1 && (
           <Button type="primary" onClick={() => next()}>
             Next
@@ -249,7 +365,24 @@ const LendFormPage = ({ onProductAdded }) => {
             Submit
           </Button>
         )}
-        <Button style={{ marginLeft: '8px' }} onClick={() => { form.resetFields(); setCurrentStep(0); }}>
+        <Button style={{ marginLeft: '8px' }} onClick={() => { 
+          form.resetFields(); 
+          setCurrentStep(0); 
+          setFormData({
+            name: '',
+            description: '',
+            price: 0,
+            category: '',
+            city: '',
+            state: '',
+            pincode: '',
+            address: '',
+            image: null,
+            imageName: '',
+            availability: 'Available'
+          }); 
+          setFileList([]);
+        }}>
           Reset
         </Button>
       </div>
