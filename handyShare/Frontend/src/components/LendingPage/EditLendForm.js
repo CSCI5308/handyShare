@@ -240,15 +240,14 @@ const EditLendForm = ({ item, onUpdate, onCancel }) => {
           <Form.Item 
             label="Availability" 
             name="availability" 
-            rules={[{ required: true, message: 'Please select availability' }]}
+            rules={[{ required: true, message: 'Please select availability status' }]}
           >
             <Select 
-              placeholder="Select availability"
-              value={formData.availability} 
+              value={formData.availability}
               onChange={(value) => setFormData({ ...formData, availability: value })}
             >
-              <Option key="Available" value="Available">Available</Option>
-              <Option key="Unavailable" value="Unavailable">Unavailable</Option>
+              <Option value="Available">Available</Option>
+              <Option value="Unavailable">Unavailable</Option>
             </Select>
           </Form.Item>
         </>
@@ -292,22 +291,22 @@ const EditLendForm = ({ item, onUpdate, onCancel }) => {
   };
 
   const handleSubmit = async () => {
-    // Prepare form data
-    const formToSend = new FormData();
-    formToSend.append('name', formData.name);
-    formToSend.append('description', formData.description);
-    formToSend.append('price', formData.price);
-    formToSend.append('category', formData.category); // Now category is a string
-    formToSend.append('city', formData.city);
-    formToSend.append('state', formData.state);
-    formToSend.append('pincode', formData.pincode);
-    formToSend.append('address', formData.address);
-    formToSend.append('availability', formData.availability);
-    if (formData.image) {
-      formToSend.append('image', formData.image);
-    }
-
     try {
+      const formToSend = new FormData();
+      formToSend.append('name', formData.name);
+      formToSend.append('description', formData.description);
+      formToSend.append('price', formData.price.toFixed(2));
+      formToSend.append('category', formData.category);
+      formToSend.append('city', formData.city);
+      formToSend.append('state', formData.state);
+      formToSend.append('pincode', formData.pincode);
+      formToSend.append('address', formData.address);
+      formToSend.append('availability', formData.availability);
+      
+      if (formData.image) {
+        formToSend.append('image', formData.image);
+      }
+
       const token = localStorage.getItem('token');
       await axios.put(`${SERVER_URL}/api/v1/user/lending/item/${item.id}`, formToSend, {
         headers: {
@@ -317,9 +316,9 @@ const EditLendForm = ({ item, onUpdate, onCancel }) => {
         withCredentials: true
       });
 
-      message.success('Product updated successfully!');
-      onUpdate(); // Refresh the lent items list
-      onCancel(); // Close the modal
+      message.success('Item updated successfully!');
+      onUpdate();
+      onCancel();
     } catch (error) {
       console.error('Error updating product:', error.response || error);
       if (error.response && error.response.data) {

@@ -5,6 +5,7 @@ import lombok.Data;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import com.g02.handyShare.User.Entity.User;
 
 @Entity
 @Data
@@ -42,6 +43,10 @@ public class LentItem {
 
     @NotBlank(message = "Availability is mandatory")
     private String availability;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     // Add other necessary fields, getters, and setters
 }

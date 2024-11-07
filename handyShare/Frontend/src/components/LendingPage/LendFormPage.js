@@ -26,6 +26,19 @@ const LendFormPage = ({ onUpdate }) => {
   const [categories, setCategories] = useState([]);
   const [fileList, setFileList] = useState([]);
 
+  // Define handleUpload before using it in steps
+  const handleUpload = (info) => {
+    const { file } = info;
+    
+    if (file) {
+      setFormData(prev => ({
+        ...prev,
+        image: file.originFileObj || file
+      }));
+      setFileList([file]);
+    }
+  };
+
   // Fetch categories from API
   useEffect(() => {
     const fetchCategories = async () => {
@@ -38,7 +51,6 @@ const LendFormPage = ({ onUpdate }) => {
           withCredentials: true
         });
 
-        // Filter out any null or undefined categories and ensure uniqueness
         const uniqueCategories = response.data
           .filter(category => category)
           .map(category => category.name)
@@ -81,7 +93,7 @@ const LendFormPage = ({ onUpdate }) => {
             rules={[{ required: true, message: 'Please enter the name' }]}
           >
             <Input 
-              value={formData.name} 
+              value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             />
           </Form.Item>
@@ -92,7 +104,7 @@ const LendFormPage = ({ onUpdate }) => {
             rules={[{ required: true, message: 'Please enter the description' }]}
           >
             <Input.TextArea 
-              value={formData.description} 
+              value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             />
           </Form.Item>
@@ -116,8 +128,32 @@ const LendFormPage = ({ onUpdate }) => {
               parser={value => value.replace(/\$\s?|(,*)/g, '')}
             />
           </Form.Item>
+
+          <Form.Item
+            label="Image"
+            name="image"
+            rules={[{ required: true, message: 'Please upload an image' }]}
+            valuePropName="fileList"
+            getValueFromEvent={(e) => {
+              if (Array.isArray(e)) {
+                return e;
+              }
+              return e?.fileList;
+            }}
+          >
+            <Upload
+              beforeUpload={() => false}
+              onChange={handleUpload}
+              accept="image/*"
+              listType="picture"
+              maxCount={1}
+              fileList={fileList}
+            >
+              <Button icon={<UploadOutlined />}>Click to Upload</Button>
+            </Upload>
+          </Form.Item>
         </>
-      ),
+      )
     },
     {
       title: 'Location & Address',
@@ -167,64 +203,32 @@ const LendFormPage = ({ onUpdate }) => {
             />
           </Form.Item>
         </>
-      ),
+      )
     },
     {
-      title: 'Image Upload',
+      title: 'Summary',
       content: (
-        <>
-          <Form.Item
-            label="Upload Image"
-            name="image"
-            rules={[{ required: true, message: 'Please upload an image' }]}
-          >
-            <Upload
-              beforeUpload={(file) => {
-                setFormData({ ...formData, image: file, imageName: file.name });
-                setFileList([file]);
-                return false;
-              }}
-              fileList={fileList}
-              onRemove={() => {
-                setFormData({ ...formData, image: null, imageName: '' });
-                setFileList([]);
-              }}
-              listType="picture"
-              maxCount={1}
-            >
-              <Button icon={<UploadOutlined />}>Click to Upload</Button>
-            </Upload>
-          </Form.Item>
-
-          {formData.image && (
-            <div style={{ marginBottom: '16px' }}>
-              <strong>Image Preview:</strong>
-              <br />
+        <Card title="Item Summary">
+          <p><strong>Category:</strong> {formData.category}</p>
+          <p><strong>Name:</strong> {formData.name}</p>
+          <p><strong>Description:</strong> {formData.description}</p>
+          <p><strong>Price:</strong> ${formData.price?.toFixed(2)}</p>
+          <p><strong>Location:</strong> {formData.address}, {formData.city}, {formData.state} - {formData.pincode}</p>
+          {fileList.length > 0 && formData.image && (
+            <div style={{ marginTop: '16px' }}>
+              <p><strong>Image Preview:</strong></p>
               <img 
                 src={URL.createObjectURL(formData.image)} 
-                alt={formData.imageName} 
-                style={{ maxWidth: '200px', marginTop: '10px' }} 
+                alt="Item preview" 
+                style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'contain' }}
+                onLoad={(e) => {
+                  URL.revokeObjectURL(e.target.src);
+                }}
               />
             </div>
           )}
-        </>
-      ),
-    },
-    {
-      title: 'Product Summary',
-      content: (
-        <Card title="Summary" bordered={false}>
-          <p><strong>Name:</strong> {formData.name}</p>
-          <p><strong>Description:</strong> {formData.description}</p>
-          <p><strong>Price:</strong> ${formData.price}</p>
-          <p><strong>Category:</strong> {formData.category}</p>
-          <p><strong>City:</strong> {formData.city}</p>
-          <p><strong>State:</strong> {formData.state}</p>
-          <p><strong>Pincode:</strong> {formData.pincode}</p>
-          <p><strong>Address:</strong> {formData.address}</p>
-          <p><strong>Availability:</strong> Available</p>
         </Card>
-      ),
+      )
     }
   ];
 
@@ -266,10 +270,14 @@ const LendFormPage = ({ onUpdate }) => {
       formToSend.append('state', formData.state);
       formToSend.append('pincode', formData.pincode);
       formToSend.append('address', formData.address);
-      formToSend.append('availability', 'Available'); // Set fixed availability
+      formToSend.append('availability', formData.availability); // Ensure availability is sent
       formToSend.append('image', formData.image);
 
       const token = localStorage.getItem('token');
+      
+      // Optionally, include user ID if required by the backend
+      // Note: Backend should infer user from the token
+
       const response = await axios.post(`${SERVER_URL}/api/v1/user/lending/item`, formToSend, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -292,7 +300,8 @@ const LendFormPage = ({ onUpdate }) => {
         pincode: '',
         address: '',
         image: null,
-        imageName: ''
+        imageName: '',
+        availability: 'Available'
       });
       setFileList([]);
     } catch (error) {
@@ -305,22 +314,25 @@ const LendFormPage = ({ onUpdate }) => {
     }
   };
 
+  useEffect(() => {
+    return () => {
+      // Cleanup is now handled by onLoad event of the image
+    };
+  }, [fileList]);
+
   return (
     <div>
-      <Steps current={currentStep}>
+      <Steps current={currentStep} style={{ marginBottom: '20px' }}>
         {steps.map(item => (
           <Step key={item.title} title={item.title} />
         ))}
       </Steps>
-
       <Form
         form={form}
         layout="vertical"
-        style={{ marginTop: '20px' }}
       >
         {steps[currentStep].content}
       </Form>
-
       <div style={{ marginTop: 24 }}>
         {currentStep < steps.length - 1 && (
           <Button type="primary" onClick={() => next()}>
