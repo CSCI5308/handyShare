@@ -12,17 +12,17 @@ const EditLendForm = ({ item, onUpdate, onCancel }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState({
-    name: item.name || '',
-    description: item.description || '',
-    price: item.price || 0,
-    category: item.category || '',
-    city: item.city || '',
-    state: item.state || '',
-    pincode: item.pincode || '',
-    address: item.address || '',
+    name: '',
+    description: '',
+    price: 0,
+    category: '',
+    city: '',
+    state: '',
+    pincode: '',
+    address: '',
     image: null,
-    imageName: item.imageName || '',
-    availability: item.availability || 'Available',
+    imageName: '',
+    availability: 'Available',
   });
 
   const [fileList, setFileList] = useState([]);
@@ -54,6 +54,24 @@ const EditLendForm = ({ item, onUpdate, onCancel }) => {
   }, []);
 
   useEffect(() => {
+    setFormData({
+      name: item.name || '',
+      description: item.description || '',
+      price: item.price || 0,
+      category: item.category || '',
+      city: item.city || '',
+      state: item.state || '',
+      pincode: item.pincode || '',
+      address: item.address || '',
+      image: null,
+      imageName: item.imageName || '',
+      availability: item.availability || 'Available',
+    });
+    
+    // Reset to first step whenever a new item is loaded
+    setCurrentStep(0);
+    
+    // Update form fields
     form.setFieldsValue({
       name: item.name,
       description: item.description,
@@ -65,7 +83,7 @@ const EditLendForm = ({ item, onUpdate, onCancel }) => {
       address: item.address,
       availability: item.availability
     });
-  }, [form, item]);
+  }, [item, form]);
 
   const steps = [
     {
@@ -113,10 +131,15 @@ const EditLendForm = ({ item, onUpdate, onCancel }) => {
           <Form.Item
             label="Price"
             name="price"
-            rules={[{ required: true, message: 'Please enter the price' }]}
+            rules={[
+              { required: true, message: 'Please enter the price' },
+              { type: 'number', min: 0.01, message: 'Price must be greater than 0' }
+            ]}
           >
             <InputNumber 
-              min={0} 
+              min={0.01} 
+              step={0.01}
+              precision={2}
               value={formData.price} 
               onChange={(value) => setFormData({ ...formData, price: value })}
               style={{ width: '100%' }}

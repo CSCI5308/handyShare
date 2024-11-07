@@ -100,13 +100,20 @@ const LendFormPage = ({ onUpdate }) => {
           <Form.Item
             label="Price"
             name="price"
-            rules={[{ required: true, message: 'Please enter the price' }]}
+            rules={[
+              { required: true, message: 'Please enter the price' },
+              { type: 'number', min: 0.01, message: 'Price must be greater than 0' }
+            ]}
           >
             <InputNumber 
-              min={0} 
+              min={0.01} 
+              step={0.01}
+              precision={2}
               value={formData.price} 
               onChange={(value) => setFormData({ ...formData, price: value })}
               style={{ width: '100%' }}
+              formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+              parser={value => value.replace(/\$\s?|(,*)/g, '')}
             />
           </Form.Item>
         </>
@@ -163,7 +170,7 @@ const LendFormPage = ({ onUpdate }) => {
       ),
     },
     {
-      title: 'Image & Availability',
+      title: 'Image Upload',
       content: (
         <>
           <Form.Item
@@ -174,8 +181,8 @@ const LendFormPage = ({ onUpdate }) => {
             <Upload
               beforeUpload={(file) => {
                 setFormData({ ...formData, image: file, imageName: file.name });
-                setFileList([file]); // Manage fileList
-                return false; // Prevent automatic upload
+                setFileList([file]);
+                return false;
               }}
               fileList={fileList}
               onRemove={() => {
@@ -200,21 +207,6 @@ const LendFormPage = ({ onUpdate }) => {
               />
             </div>
           )}
-
-          <Form.Item 
-            label="Availability" 
-            name="availability" 
-            rules={[{ required: true, message: 'Please select availability' }]}
-          >
-            <Select 
-              placeholder="Select availability"
-              value={formData.availability} 
-              onChange={(value) => setFormData({ ...formData, availability: value })}
-            >
-              <Option key="Available" value="Available">Available</Option>
-              <Option key="Unavailable" value="Unavailable">Unavailable</Option>
-            </Select>
-          </Form.Item>
         </>
       ),
     },
@@ -230,14 +222,7 @@ const LendFormPage = ({ onUpdate }) => {
           <p><strong>State:</strong> {formData.state}</p>
           <p><strong>Pincode:</strong> {formData.pincode}</p>
           <p><strong>Address:</strong> {formData.address}</p>
-          <p><strong>Availability:</strong> {formData.availability}</p>
-          {formData.image && (
-            <div>
-              <strong>Image:</strong>
-              <br />
-              <img src={URL.createObjectURL(formData.image)} alt={formData.imageName} style={{ maxWidth: '200px', marginTop: '10px' }} />
-            </div>
-          )}
+          <p><strong>Availability:</strong> Available</p>
         </Card>
       ),
     }
@@ -256,41 +241,35 @@ const LendFormPage = ({ onUpdate }) => {
   };
 
   const handleSubmit = async () => {
-    // Ensure all required fields are present
-    if (
-      !formData.category ||
-      !formData.name ||
-      !formData.description ||
-      formData.price === null ||
-      !formData.city ||
-      !formData.state ||
-      !formData.pincode ||
-      !formData.address ||
-      !formData.availability ||
-      !formData.image
-    ) {
-      message.error('Please fill out all required fields.');
-      return;
-    }
-
     try {
+      // Validate all form fields first
+      await form.validateFields();
+      
+      // Check if price is valid
+      if (!formData.price || formData.price <= 0) {
+        message.error('Price must be greater than 0');
+        return;
+      }
+
+      // Check if image is present
+      if (!formData.image) {
+        message.error('Please upload an image');
+        return;
+      }
+
       const formToSend = new FormData();
       formToSend.append('category', formData.category);
       formToSend.append('name', formData.name);
       formToSend.append('description', formData.description);
-      formToSend.append('price', formData.price);
+      formToSend.append('price', formData.price.toFixed(2)); // Format price to 2 decimal places
       formToSend.append('city', formData.city);
       formToSend.append('state', formData.state);
       formToSend.append('pincode', formData.pincode);
       formToSend.append('address', formData.address);
-      formToSend.append('availability', formData.availability);
-      if (formData.image) {
-        formToSend.append('image', formData.image);
-      }
+      formToSend.append('availability', 'Available'); // Set fixed availability
+      formToSend.append('image', formData.image);
 
       const token = localStorage.getItem('token');
-
-      // eslint-disable-next-line
       const response = await axios.post(`${SERVER_URL}/api/v1/user/lending/item`, formToSend, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -313,20 +292,13 @@ const LendFormPage = ({ onUpdate }) => {
         pincode: '',
         address: '',
         image: null,
-        imageName: '',
-        availability: 'Available'
+        imageName: ''
       });
       setFileList([]);
     } catch (error) {
       console.error('Error adding product:', error.response || error);
       if (error.response && error.response.data) {
-        if (typeof error.response.data === 'object') {
-          Object.values(error.response.data).forEach(errMsg => {
-            message.error(errMsg);
-          });
-        } else {
-          message.error(error.response.data);
-        }
+        message.error(typeof error.response.data === 'string' ? error.response.data : 'Failed to add product');
       } else {
         message.error('Failed to add product');
       }
