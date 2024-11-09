@@ -168,6 +168,7 @@ const BorrowingPage = () => {
       borrowEndDate: "15-November-2024",
       pricePerDay: 150,
       orderNumber: 248,
+      ownerName: "John Doe",
     },
     {
       id: 2,
@@ -179,6 +180,7 @@ const BorrowingPage = () => {
       borrowEndDate: "14-November-2024",
       pricePerDay: 100,
       orderNumber: 249,
+      ownerName: "John Doe",
     },
     {
       id: 3,
@@ -190,6 +192,7 @@ const BorrowingPage = () => {
       borrowEndDate: "12-November-2024",
       pricePerDay: 25,
       orderNumber: 250,
+      ownerName: "John Doe",
     },
     {
       id: 4,
@@ -201,6 +204,7 @@ const BorrowingPage = () => {
       borrowEndDate: "10-November-2024",
       pricePerDay: 30,
       orderNumber: 251,
+      ownerName: "John Doe",
     },
     {
       id: 5,
@@ -212,6 +216,7 @@ const BorrowingPage = () => {
       borrowEndDate: "05-November-2024",
       pricePerDay: 200,
       orderNumber: 252,
+      ownerName: "John Doe",
     },
   ];
 
@@ -333,6 +338,7 @@ const BorrowingPage = () => {
                     <p style={{ margin: '5px 0' }}>Borrow Period: {borrowing.borrowStartDate} - {borrowing.borrowEndDate}</p>
                     <p style={{ margin: '5px 0' }}>Order Number: {borrowing.orderNumber}</p>
                     <p style={{ margin: '5px 0' }}>Borrowed for: {borrowing.pricePerDay} AED/day</p>
+                    <p style={{ margin: '5px 0' }}>Owner's Name: {borrowing.ownerName}</p>
                   </div>
                   {/* Timer */}
                   <div style={{ position: 'absolute', top: '10px', right: '10px' }}>
