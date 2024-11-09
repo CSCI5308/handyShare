@@ -9,7 +9,12 @@ import { useLocation } from 'react-router-dom';
 
 const { Header, Content, Footer } = Layout;
 
-const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
+// const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
+
+const STRIPE_PUBLISHABLE_KEY = 'pk_test_51QCMlpCj4cfMdtSgAbaQWosVrynmSsvjqzFwkYyvLRzQUtggclYAr6mmKAQ5iQJV4v78ZIt8m7rmtzohoWPB4EvZ00kOiOJFmR';  // Replace this with your actual Stripe publishable key
+console.log('Stripe Publishable Key:', STRIPE_PUBLISHABLE_KEY);
+
+const stripePromise = loadStripe(STRIPE_PUBLISHABLE_KEY);
 
 const Payment = () => {
   const [paymentComplete, setPaymentComplete] = useState(false);

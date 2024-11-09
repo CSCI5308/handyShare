@@ -5,13 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fe97f115-cee4-445b-aa02-b1601066c32c" name="Changes" comment="">
-
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/handyShare/Frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/handyShare/Frontend/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/handyShare/Frontend/src/components/Homepage/CategoriesNavigation.js" beforeDir="false" afterPath="$PROJECT_DIR$/handyShare/Frontend/src/components/Homepage/CategoriesNavigation.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/handyShare/Frontend/src/components/Homepage/HeaderBar.js" beforeDir="false" afterPath="$PROJECT_DIR$/handyShare/Frontend/src/components/Homepage/HeaderBar.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/handyShare/Frontend/src/pages/HomeScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/handyShare/Frontend/src/pages/HomeScreen.js" afterDir="false" />
-
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,6 +45,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "JUnit.java in handyShare.executor": "Run",
     "RequestMappingsPanelOrder0": "0",
     "RequestMappingsPanelOrder1": "1",
     "RequestMappingsPanelWidth0": "75",
@@ -58,9 +53,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "Spring Boot.HandyShareApplication.executor": "Run",
-
-    "git-widget-placeholder": "feat/home-page-frontend",
-
+    "git-widget-placeholder": "feat3",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "D:/Project/course-project-g02",
@@ -71,13 +64,28 @@
     "nodejs_package_manager_path": "npm",
     "project.structure.last.edited": "Project",
     "project.structure.proportion": "0.15",
-
     "project.structure.side.proportion": "0.0",
-
+    "settings.editor.selected.configurable": "configurable.group.build",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager">
+  <component name="RunManager" selected="JUnit.handyShare in handyShare">
+    <configuration name="handyShare in handyShare" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="handyShare" />
+      <option name="TEST_OBJECT" value="directory" />
+      <dir value="$PROJECT_DIR$/handyShare/Backend/src/test/java/com/g02/handyShare" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="java in handyShare" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="handyShare" />
+      <option name="TEST_OBJECT" value="directory" />
+      <dir value="$PROJECT_DIR$/handyShare/Backend/src/test/java" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="HandyShareApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.g02.handyShare.HandyShareApplication" />
@@ -85,14 +93,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-  </component>
-  <component name="SharedIndexes">
-    <attachedChunks>
-      <set>
-        <option value="bundled-jdk-9823dce3aa75-b114ca120d71-intellij.indexing.shared.core-IU-242.21829.142" />
-        <option value="bundled-js-predefined-d6986cc7102b-7c0b70fcd90d-JavaScript-IU-242.21829.142" />
-      </set>
-    </attachedChunks>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.handyShare in handyShare" />
+        <item itemvalue="JUnit.java in handyShare" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -117,9 +123,7 @@
       <workItem from="1728314200280" duration="28000" />
       <workItem from="1728314238497" duration="54000" />
       <workItem from="1728349094875" duration="23000" />
-
       <workItem from="1729006616596" duration="744000" />
-
     </task>
     <servers />
   </component>
