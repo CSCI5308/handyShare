@@ -10,7 +10,6 @@ import com.g02.handyShare.User.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,15 +39,15 @@ public class ProductService {
     public ResponseEntity<?> addProduct(Product product, MultipartFile file) {
 
         try {
-           
-            Product tobeSaved = new Product();
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             System.out.println(authentication.getName());
+            System.out.println(authentication.getPrincipal());
             
             User owner = userRepository.findByEmail(authentication.getName());
+            Product tobeSaved = new Product();
             String imageUrl = firebaseService.uploadFile(file, "product_images");
             System.out.println("------------------------------------------------------------" + imageUrl);
-            // tobeSaved.setAvailable(true);
+            tobeSaved.setAvailable(true);
             tobeSaved.setCategory(product.getCategory());
             tobeSaved.setDescription(product.getDescription());
             tobeSaved.setProductImage(imageUrl);
@@ -58,7 +57,7 @@ public class ProductService {
                 return ResponseEntity.badRequest().body("Invalid price format");
             }
             tobeSaved.setName(product.getName());
-            tobeSaved.setUserId(owner);
+            tobeSaved.setUser(owner);
             Product saved = productRepository.save(tobeSaved);
             return ResponseEntity.ok().body(saved);
         } catch (IOException e) {

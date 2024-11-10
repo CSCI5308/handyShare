@@ -2,9 +2,14 @@ package com.g02.handyShare.Product.Controller;
 
 import com.g02.handyShare.Category.Entity.Category;
 import com.g02.handyShare.Config.Firebase.FirebaseService;
+ 
 import com.g02.handyShare.Product.Entity.Product;
 import com.g02.handyShare.Product.Repository.ProductRepository;
 import com.g02.handyShare.Product.Service.ProductService;
+import com.g02.handyShare.User.Entity.User;
+import com.g02.handyShare.User.Repository.UserRepository;
+import com.g02.handyShare.User.Service.UserService;
+
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +31,9 @@ import java.util.Map;
 public class ProductController {
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private UserService  userService;
 
      @Autowired
     private ProductRepository productRepository;
@@ -53,9 +61,21 @@ public class ProductController {
 
 
 
-    @GetMapping("user/product/{id}")
-    public Product viewProductById(@PathVariable Long id){
-        return productService.getProductById(id);
+    @GetMapping("/user/product/{id}")
+    public ResponseEntity<?> viewProductById(@PathVariable Long id){
+
+        Product product = productService.getProductById(id);
+       if(product == null ){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found");
+       }
+
+    
+       
+    //   User lender = userService.findUserById(id)
+
+        return ResponseEntity.ok(product);
+
+       // return productService.getProductById(id);
     }
 
     @GetMapping("/user/allProducts")

@@ -70,7 +70,7 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/signup", "/api/v1/all/**", "/genToken").permitAll()
+                        .requestMatchers("/signup", "/api/v1/all/**", "/api/v1/all/forgot-password/**", "/api/v1/all/change-password/**" , "/genToken").permitAll()
                         .requestMatchers("api/v1/admin/**").hasAnyAuthority("admin")  // Only accessible by users with ADMIN role
                         .requestMatchers("api/v1/user/**").hasAnyAuthority("user", "admin")  // Only accessible by users with USER or ADMIN roles
                         .anyRequest().authenticated()  // All other endpoints need authentication
@@ -94,6 +94,7 @@ public class SecurityConfig {
                    newUser.setPassword(passwordEncoder().encode("admin@123"));
                     newUser.setImageData(user.getAttribute("picture"));
                     newUser.setName(user.getAttribute("name"));
+                    newUser.set_email_verified(true);
                     userRepo.save(newUser);
                     
                        
@@ -144,5 +145,3 @@ public class SecurityConfig {
    
     
 }
-
-

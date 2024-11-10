@@ -1,6 +1,10 @@
 package com.g02.handyShare.User.Entity;
 
 
+import java.util.List;
+
+import com.g02.handyShare.Product.Entity.Product;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import java.util.Date;
 
 @Entity
 @NoArgsConstructor
@@ -19,10 +24,6 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-//    private String name;
-//    private String email;
-//    private String password;
 
     @NotBlank(message = "Name is required")
     private String name;
@@ -44,8 +45,27 @@ public class User {
     private String Address;
     private String pincode;
     private String phone;
+
     //variables for storing image data.
-    
-  
     private String imageData;
+
+    private String resetToken;
+    private Date resetTokenExpiry;
+
+    public String getResetToken() {
+        return resetToken;
+    }
+
+    public void setResetToken(String resetToken) {
+        this.resetToken = resetToken;
+    }
+
+    public Date getResetTokenExpiry() {
+        return resetTokenExpiry;
+    }
+
+    public void setResetTokenExpiry(Date resetTokenExpiry) {
+        this.resetTokenExpiry = resetTokenExpiry;
+    }
+
 }

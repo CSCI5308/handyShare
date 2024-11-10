@@ -46,8 +46,8 @@ public class Product {
     private Double rentalPrice;
  
     @ManyToOne
-    @JoinColumn(name="userId",referencedColumnName = "id")
-    private User userId; 
+    @JoinColumn(name="lender",referencedColumnName = "id")
+    private User lender; 
 
     @Column(name = "created_date", nullable = false, updatable = false)
     private LocalDateTime createdDate;

@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -74,5 +75,12 @@ public class UserService {
         return "Successfully verified email";
        }
       return "Failed verifying the email";
+    }
+
+    public Optional<User> findUserById(Long UserId){
+   
+          
+           Optional<User> owner = userRepository.findById(UserId);
+return  owner;
     }
 }

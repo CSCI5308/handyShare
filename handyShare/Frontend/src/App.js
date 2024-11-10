@@ -21,6 +21,8 @@ import { AuthProvider } from './context/AuthContext.js';
 
 import BorrowingPage from './pages/BorrowingPage.js';
 
+import ChangePasswordPage from './pages/ChangePassword.js';
+
 
 function App() {
   return (
@@ -43,6 +45,9 @@ function App() {
       <Route path="/rent-summary" element={<ProtectedRoute><RentSummaryPage/></ProtectedRoute>} />
       
       <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler/>}/>
+
+      <Route path="/borrow" element={<ProtectedRoute><BorrowingPage/></ProtectedRoute>} />
+      <Route path="/change-password" element={<ChangePasswordPage/>}/>
 
     </Routes>
     </AuthProvider>

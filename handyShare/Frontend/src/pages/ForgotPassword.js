@@ -1,16 +1,37 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState(''); 
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulate password reset logic
-    if (email) {
-      setMessage(`Password reset link sent to ${email}`);
-    } else {
-      setMessage('Please enter a valid email address.');
+    setMessage(''); 
+    try {
+      const response = await fetch('http://localhost:8080/api/v1/all/forgot-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }), 
+      });
+
+      const result = await response.text(); 
+
+      if (response.ok) {
+        setMessageType('success');
+        setMessage(result || `Password reset link sent to ${email}`);
+      } else {
+        setMessageType('error');
+        setMessage(result || 'Error sending reset link.');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setMessageType('error');
+      setMessage('An error occurred. Please try again.');
     }
   };
 
@@ -20,7 +41,10 @@ function ForgotPassword() {
         <h2 className="text-2xl font-bold mb-6 text-center">Forgot Password</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="email"
+            >
               Email Address
             </label>
             <input
@@ -40,7 +64,15 @@ function ForgotPassword() {
             Send Reset Link
           </button>
         </form>
-        {message && <p className="mt-4 text-center text-green-500">{message}</p>}
+        {message && (
+          <p className="mt-4 text-center text-green-500">{message}</p>
+        )}
+        <button
+          onClick={() => navigate('/login')} 
+          className="mt-4 bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+        >
+          Back to Login
+        </button>
       </div>
     </div>
   );

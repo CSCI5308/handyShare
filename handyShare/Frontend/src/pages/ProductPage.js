@@ -11,11 +11,10 @@ const ProductPage = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [reviews, setReviews] = useState([]);
-  const [lender, setLender] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
-  const MAX_HOURS = 24; // Maximum hours selectable for rent
+  const MAX_HOURS = 24;
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -32,17 +31,6 @@ const ProductPage = () => {
           withCredentials: true
         });
         setProduct(productResponse.data);
-
-        // Fetch lender information if userId is available
-        if (productResponse.data.userId) {
-          const lenderResponse = await axios.get(`http://localhost:8080/api/v1/all/users/${productResponse.data.userId}`, {
-            headers: { Authorization: `Bearer ${token}` },
-            withCredentials: true
-          });
-          setLender(lenderResponse.data);
-        } else {
-          setLender(null);
-        }
         setLoading(false);
       } catch (err) {
         setError('Error loading product details.');
@@ -57,12 +45,12 @@ const ProductPage = () => {
       message.warning('Please select a date to proceed with the rental.');
       return;
     }
-    navigate('/rent-summary', { 
-      state: { 
-        product, 
-        hours: product.transactionTime || 2, 
-        selectedDate 
-      } 
+    navigate('/rent-summary', {
+      state: {
+        product,
+        hours: product.transactionTime || 2,
+        selectedDate
+      }
     });
   };
 
@@ -109,7 +97,7 @@ const ProductPage = () => {
             <label className="block text-lg font-medium mb-2">Select Hours:</label>
             <select
               value={product.transactionTime}
-              onChange={(e) => setProduct({...product, transactionTime: Number(e.target.value)})}
+              onChange={(e) => setProduct({ ...product, transactionTime: Number(e.target.value) })}
               className="w-full p-2 border border-gray-300 rounded-md"
             >
               {[...Array(MAX_HOURS)].map((_, i) => (
@@ -134,7 +122,7 @@ const ProductPage = () => {
               dateFormat="MMMM d, yyyy"
               className="w-full p-2 border border-gray-300 rounded-md"
               placeholderText="Choose a date"
-              minDate={new Date()} // Disable past dates
+              minDate={new Date()}
             />
           </div>
 
@@ -149,18 +137,28 @@ const ProductPage = () => {
 
         {/* Right Section: Lender Information */}
         <div className="bg-white p-6 rounded-lg shadow-md">
-          {lender ? (
+          {product.lender ? (
             <>
               <h3 className="heading-lg mb-2">Lender Information</h3>
-              <p>Name: {lender.name}</p>
-              <p>Rating: {lender.rating || '4.5'}</p>
-              <p>Location: {lender.location || 'New York, NY'}</p>
+              <p><strong>Name:</strong> {product.lender.name}</p>
+              <p><strong>Email:</strong> {product.lender.email}</p>
+              {product.lender.imageData ? (
+                <img
+                  src={product.lender.imageData}
+                  alt={product.lender.name}
+                  className="w-24 h-24 rounded-full object-cover mt-4"
+                />
+              
+              ) : (
+                <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center mt-4">
+                  <span className="text-gray-500">No Image Available</span>
+                </div>
+              )}
             </>
           ) : (
             <p>Loading lender information...</p>
           )}
           <h3 className="heading-lg mt-4">Lender's Location</h3>
-          {/* Integrate Google Maps or any map service here */}
           <p>Google map location goes here.</p>
         </div>
       </main>
