@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import HeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar.js';
 import { motion } from 'framer-motion';
 import { Tooltip, Modal } from 'antd';
-import defaultProfileImage from './defaultProfileImage.png';
 
 const RentSummaryPage = () => {
   const navigate = useNavigate();

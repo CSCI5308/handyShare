@@ -278,7 +278,7 @@ const LendFormPage = ({ onUpdate }) => {
       // Optionally, include user ID if required by the backend
       // Note: Backend should infer user from the token
 
-      const response = await axios.post(`${SERVER_URL}/api/v1/user/lending/item`, formToSend, {
+      await axios.post(`${SERVER_URL}/api/v1/user/lending/item`, formToSend, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`

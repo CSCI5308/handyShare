@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState(''); 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -22,15 +21,12 @@ function ForgotPassword() {
       const result = await response.text(); 
 
       if (response.ok) {
-        setMessageType('success');
         setMessage(result || `Password reset link sent to ${email}`);
       } else {
-        setMessageType('error');
         setMessage(result || 'Error sending reset link.');
       }
     } catch (error) {
       console.error('Error:', error);
-      setMessageType('error');
       setMessage('An error occurred. Please try again.');
     }
   };

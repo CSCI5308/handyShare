@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Space, Layout, Dropdown, Menu, message } from 'antd';
-import { UserOutlined, DownOutlined } from '@ant-design/icons';
+import { UserOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 
 const { Header } = Layout;

@@ -10,7 +10,6 @@ const ProductPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [product, setProduct] = useState(null);
-  const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -75,15 +74,8 @@ const ProductPage = () => {
           <h3 className="heading-lg mb-2">Description</h3>
           <p className="text-gray-600">{product.description}</p>
           <h3 className="heading-lg mt-6">Reviews</h3>
-          {reviews.length > 0 ? (
-            reviews.map((review, index) => (
-              <div key={index} className="mt-2 text-gray-600">
-                <p><strong>{review.user}:</strong> {review.comment}</p>
-              </div>
-            ))
-          ) : (
-            <p>No reviews available.</p>
-          )}
+          {/* No reviews needed here, so remove setReviews and reviews */}
+          <p>No reviews available.</p>
         </div>
 
         {/* Middle Section: Product Details */}
