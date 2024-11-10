@@ -81,7 +81,7 @@ public class productServiceTest {
     public void addProductWithUserTest() throws IOException {
         // Arrange
         String email = "john@gmail.com";
-        User owner = new User(1L, "John", email, "password123", "user", false, null, "123 Main St", "123456", "1234567890", null);
+        User owner = new User(1L, "John", email, "password123", "user", false, null, "123 Main St", "123456", "1234567890", null, email, null);
 
         when(authentication.getName()).thenReturn(owner.getEmail());
         when(userRepository.findByEmail(email)).thenReturn(owner);

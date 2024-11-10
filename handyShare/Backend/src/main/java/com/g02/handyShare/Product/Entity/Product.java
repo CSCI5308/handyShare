@@ -52,6 +52,13 @@ public class Product {
     @Column(name = "created_date", nullable = false, updatable = false)
     private LocalDateTime createdDate;
 
+    @Column(name = "is_available")
+    private Boolean available;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @PrePersist
     protected void onCreate() {
     this.createdDate = LocalDateTime.now();
@@ -59,4 +66,19 @@ public class Product {
     
 }
 
+    public Boolean getAvailable() {
+        return available;
+    }
+    
+    public void setAvailable(Boolean available) {
+        this.available = available;
+    }
+    
+    public User getUser() {
+        return user;
+    }
+    
+    public void setUser(User user) {
+        this.user = user;
+    }
 }
