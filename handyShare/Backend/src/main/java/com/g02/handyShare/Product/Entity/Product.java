@@ -25,18 +25,19 @@ import com.g02.handyShare.User.Entity.User;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@ToString
 public class Product {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message="Product name is required.")
+    @NotBlank(message = "Product name is required.")
     private String name;
 
+    @Column(length = 500) // Limit description length if required
     private String description;
 
-    @NotBlank(message="Category is required.")
+    @NotBlank(message = "Category is required.")
     private String category;
 
     private String productImage;
@@ -44,19 +45,22 @@ public class Product {
     @NotNull(message = "Rental Price is required.")
     @Min(value = 0, message = "Rental Price should be positive.")
     private Double rentalPrice;
- 
+
     @ManyToOne
-    @JoinColumn(name="lender", referencedColumnName = "id")
-    private User lender; 
+    @JoinColumn(name = "lender", referencedColumnName = "id")
+    @ToString.Exclude // Avoids potential infinite recursion
+    private User lender;
 
     @Column(name = "created_date", nullable = false, updatable = false)
     private LocalDateTime createdDate;
 
     @PrePersist
-    protected void onCreate() {
-        this.createdDate = LocalDateTime.now();
+    private void initializeCreatedDate() {
+        if (createdDate == null) {
+            this.createdDate = LocalDateTime.now();
+        }
     }
 
-    @Column(nullable = true)
+    @Column(nullable = true) // Ensures it's never null in the database
     private Boolean available = true;
 }
