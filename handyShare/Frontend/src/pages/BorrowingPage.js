@@ -1,226 +1,263 @@
-import React, { useState, useEffect } from 'react';
-import { Layout, Menu, Card, Select, Input, Pagination, Row, Col, Avatar, Typography } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
-import axios from 'axios';
-import dayjs from 'dayjs';
-import duration from 'dayjs/plugin/duration';
-import HeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar.js';
 
-dayjs.extend(duration);
 
-const { Content, Sider } = Layout;
-const { Option } = Select;
-const { Title, Text } = Typography;
+  dayjs.extend(duration);
 
-const BorrowingPage = () => {
-  const [borrowings, setBorrowings] = useState([]);
-  const [view, setView] = useState('borrowings');
-  const [sortOrder, setSortOrder] = useState('Newest');
-  const [searchText, setSearchText] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3;
+  const { Content, Sider } = Layout;
+  const { Option } = Select;
 
-  useEffect(() => {
-    const fetchBorrowedProducts = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:8080/api/v1/user/borrowedProducts', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        });
-        setBorrowings(response.data);
-      } catch (err) {
-        console.error('Error fetching borrowed products:', err);
-      }
-    };
-
-    fetchBorrowedProducts();
-  }, []);
-
-  const AnalogTimer = ({ startDate, endDate }) => {
-    const calculateTimeLeft = () => {
-      const now = dayjs();
-      const start = dayjs(startDate);
-      const end = dayjs(endDate);
-
-      if (now.isBefore(start) || now.isAfter(end)) {
-        return null;
-      }
-
-      const timeLeft = dayjs.duration(end.diff(now));
-      return {
-        days: timeLeft.days(),
-        hours: timeLeft.hours(),
-        minutes: timeLeft.minutes(),
-        seconds: timeLeft.seconds(),
-      };
-    };
-
-    const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+  const BorrowingPage = () => {
+    const [borrowings, setBorrowings] = useState([]);
+    const [view, setView] = useState('borrowings');
+    const [sortOrder, setSortOrder] = useState('Newest');
+    const [searchText, setSearchText] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 3;
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [returnedItems, setReturnedItems] = useState(new Set());
+    const [selectedBorrowId, setSelectedBorrowId] = useState(null);
 
     useEffect(() => {
-      const timer = setInterval(() => {
-        setTimeLeft(calculateTimeLeft());
-      }, 1000);
+      const fetchBorrowedProducts = async () => {
+        try {
+          const token = localStorage.getItem('token');
+          const response = await axios.get('http://localhost:8080/api/v1/user/borrowedProducts', {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            withCredentials: true,
+          });
+          setBorrowings(response.data);
+        } catch (err) {
+          console.error('Error fetching borrowed products:', err);
+        }
+      };
 
-      return () => clearInterval(timer);
-    }, [startDate, endDate]);
+      fetchBorrowedProducts();
+    }, []);
 
-    if (!timeLeft) return null;
+    const AnalogTimer = ({ startDate, endDate }) => {
+      const calculateTimeLeft = () => {
+        const now = dayjs();
+        const start = dayjs(startDate);
+        const end = dayjs(endDate);
 
+        if (now.isBefore(start) || now.isAfter(end)) {
+          return null;
+        }
+
+        const timeLeft = dayjs.duration(end.diff(now));
+        return {
+          days: timeLeft.days(),
+          hours: timeLeft.hours(),
+          minutes: timeLeft.minutes(),
+          seconds: timeLeft.seconds(),
+        };
+      };
+
+      const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+
+
+
+    const sortedBorrowings = [...filteredBorrowings].sort((a, b) => {
+      return sortOrder === 'Newest'
+        ? new Date(b.timerStart) - new Date(a.timerStart)
+        : new Date(a.timerStart) - new Date(b.timerStart);
+    });
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = sortedBorrowings.slice(indexOfFirstItem, indexOfLastItem);
+
+    const handleMenuClick = (e) => {
+      setView(e.key);
+    };
+
+    const handleSortChange = (value) => {
+      setSortOrder(value);
+    };
+
+    const handleSearchChange = (e) => {
+      setSearchText(e.target.value);
+    };
+
+
+
+    const showReturnModal = (borrowId) => {
+      setSelectedBorrowId(borrowId);
+      setIsModalVisible(true);
+    };
+    const handleFileChange = (info) => {
+      setSelectedFile(info.file.originFileObj);
+    };
+    
+    const calculateBreakdown = (borrowing) => {
+      const penalty = borrowing.penalty || 0; // Ensure penalty has a default value of 0 if not provided
+      const totalPayment = borrowing.totalPayment || 0; // Ensure totalPayment has a default value of 0 if not provided
+      const platformFees = totalPayment * 0.02; // 2% platform fees
+      const productCharge = totalPayment - penalty - platformFees; // Calculate product charge
+    
+      return { productCharge, penalty, platformFees, totalPayment };
+    };
+    
+
+    const handleCancel = () => {
+      setIsModalVisible(false);
+      setSelectedFile(null);
+      setSelectedBorrowId(null);
+    };
+
+    const handleReturnSubmit = async () => {
+      if (!selectedFile) {
+        notification.error({ message: 'Please select an image to proceed.' });
+        return;
+      }
+    
+      // Check file size (e.g., max 5MB)
+      if (selectedFile.size > 5 * 1024 * 1024) {
+        notification.error({ message: 'File size exceeds the limit of 5MB.' });
+        return;
+      }
+    
+      // Check file type (e.g., only allow image files)
+      if (!['image/jpeg', 'image/png', 'image/gif'].includes(selectedFile.type)) {
+        notification.error({ message: 'Only image files are allowed.' });
+        return;
+      }
+    
+      const formData = new FormData();
+      formData.append('borrowId', selectedBorrowId);
+      formData.append('productImage', selectedFile);
+    
+      try {
+        const token = localStorage.getItem('token');
+        await axios.post('http://localhost:8080/api/v1/user/product/ReturnedBorrower', formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+    
+        setReturnedItems((prev) => new Set(prev).add(selectedBorrowId));
+        notification.success({ message: 'Product returned successfully!' });
+      } catch (error) {
+        notification.error({ message: 'Failed to return product' });
+        console.error(error);
+      } finally {
+        handleCancel();
+      }
+    };
+    
     return (
-      <div style={{ fontSize: '16px', fontWeight: 'bold' }}>
-        {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m {timeLeft.seconds}s
-      </div>
-    );
-  };
-
-  const filteredBorrowings = borrowings.filter((borrowing) =>
-    borrowing.product.name.toLowerCase().includes(searchText.toLowerCase())
-  );
-
-  const sortedBorrowings = [...filteredBorrowings].sort((a, b) => {
-    return sortOrder === 'Newest'
-      ? new Date(b.timerStart) - new Date(a.timerStart)
-      : new Date(a.timerStart) - new Date(b.timerStart);
-  });
-
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = sortedBorrowings.slice(indexOfFirstItem, indexOfLastItem);
-
-  const handleMenuClick = (e) => {
-    setView(e.key);
-  };
-
-  const handleSortChange = (value) => {
-    setSortOrder(value);
-  };
-
-  const handleSearchChange = (e) => {
-    setSearchText(e.target.value);
-    setCurrentPage(1);
-  };
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
-  return (
-    <div>
-      <HeaderBar />
-      <Layout style={{ minHeight: '100vh' }}>
-        <Sider width={220} style={{ background: '#fff' }}>
-          <Menu
-            mode="inline"
-            defaultSelectedKeys={['borrowings']}
-            style={{ height: '100%', borderRight: 0 }}
-            onClick={handleMenuClick}
-          >
-            <Menu.Item key="borrowings">My Borrowings</Menu.Item>
-          </Menu>
-        </Sider>
-        <Layout style={{ padding: '20px' }}>
-          <Content style={{ background: '#f9f9f9', padding: '30px', borderRadius: '8px' }}>
-            <Title level={2} style={{ marginBottom: '20px' }}>Your Borrowed Items</Title>
-
-            <Row gutter={[16, 16]} style={{ marginBottom: '20px' }} align="middle">
-              <Col xs={24} sm={12} md={8} lg={6}>
-                <Text strong>Sort By:</Text>
+      <div>
+        <HeaderBar />
+        <Layout>
+          <Sider width={200}>
+            <Menu
+              mode="inline"
+              defaultSelectedKeys={['borrowings']}
+              style={{ height: '100%', borderRight: 0 }}
+              onClick={handleMenuClick}
+            >
+              <Menu.Item key="borrowings">My Borrowings</Menu.Item>
+            </Menu>
+          </Sider>
+          <Layout style={{ padding: '20px' }}>
+            <Content style={{ padding: '20px', background: '#fff' }}>
+              <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '10px' }}>Your Borrowed Items</h1>
+              
+              <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center' }}>
+                <span style={{ marginRight: '10px' }}>Sort:</span>
                 <Select
-                  value={sortOrder}
+                  defaultValue={sortOrder}
                   onChange={handleSortChange}
-                  style={{ width: '100%', marginTop: '5px' }}
+                  style={{ width: 120, marginRight: '10px' }}
                 >
                   <Option value="Newest">Newest</Option>
                   <Option value="Oldest">Oldest</Option>
                 </Select>
-              </Col>
-              <Col xs={24} sm={12} md={16} lg={12}>
                 <Input
-                  placeholder="Search by product name"
+                  placeholder="Search by name"
                   prefix={<SearchOutlined />}
                   value={searchText}
                   onChange={handleSearchChange}
-                  allowClear
+                  style={{ marginBottom: '8px', width: '300px', marginTop: '10px' }}
                 />
-              </Col>
-            </Row>
+              </div>
 
-            <Row gutter={[24, 24]}>
-              {currentItems.map((borrowing) => (
-                <Col xs={24} sm={24} md={12} lg={8} key={borrowing.id}>
-                  <Card hoverable>
-                    <Row gutter={[16, 16]}>
-                      {/* Product Section */}
-                      <Col span={24}>
-                        <Row gutter={[16, 16]}>
-                          <Col span={8}>
-                            <img
-                              src={borrowing.product.productImage}
-                              alt={borrowing.product.name}
-                              style={{ width: '100%', borderRadius: '8px' }}
-                            />
-                          </Col>
-                          <Col span={16}>
-                            <Title level={4}>{borrowing.product.name}</Title>
-                            <Text>{borrowing.product.description}</Text>
-                            <br />
-                            <Text strong>Price:</Text> {borrowing.product.rentalPrice} AED/day
-                            <br />
-                            <Text strong>Duration:</Text> {dayjs(borrowing.timerEnd).diff(dayjs(borrowing.timerStart), 'days')} days
-                          </Col>
-                        </Row>
-                      </Col>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              {currentItems.map((borrowing) => {
+  const isReturned = borrowing.returnImage || borrowing.returnByBorrowerTime;
+  const breakdown = calculateBreakdown(borrowing);
 
-                      {/* Timer and Lender Section */}
-                      <Col span={24}>
-                        <Row justify="space-between" align="middle">
-                          {/* Timer */}
-                          <Col>
-                            <Text strong>Time Left:</Text>
-                            <AnalogTimer startDate={borrowing.timerStart} endDate={borrowing.timerEnd} />
-                          </Col>
+  return (
 
-                          {/* Lender */}
-                          <Col>
-                            <Row align="middle" gutter={[8, 8]}>
-                              <Col>
-                                <Avatar
-                                  src={borrowing.product.lender.imageData}
-                                  size="large"
-                                />
-                              </Col>
-                              <Col>
-                                <Text strong>{borrowing.product.lender.name}</Text>
-                                <br />
-                                <Text type="secondary">{borrowing.product.lender.email}</Text>
-                              </Col>
-                            </Row>
-                          </Col>
-                        </Row>
-                      </Col>
-                    </Row>
-                  </Card>
-                </Col>
-              ))}
-            </Row>
-
-            <Pagination
-              current={currentPage}
-              pageSize={itemsPerPage}
-              total={sortedBorrowings.length}
-              onChange={handlePageChange}
-              style={{ textAlign: 'center', marginTop: '20px' }}
-              showSizeChanger={false}
             />
-          </Content>
-        </Layout>
-      </Layout>
-    </div>
-  );
-};
+          ) : (
+            <div
+              style={{
+                display: 'inline-block',
+                padding: '10px',
+                borderRadius: '50%',
+                border: '2px solid #e0e0e0',
+                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+              }}
+            >
+              <AnalogTimer startDate={borrowing.timerStart} endDate={borrowing.timerEnd} />
+            </div>
+          )}
+        </div>
 
-export default BorrowingPage;
+        <Button
+          type="primary"
+          onClick={() => showReturnModal(borrowing.id)}
+          disabled={isReturned}
+          style={isReturned ? { backgroundColor: '#d9d9d9', borderColor: '#d9d9d9', color: '#8c8c8c' } : {}}
+        >
+          {isReturned ? 'Returned' : 'Return Product'}
+        </Button>
+      </div>
+    </Card>
+  );
+})}
+
+
+              </div>
+
+              <Pagination
+                current={currentPage}
+                pageSize={itemsPerPage}
+                total={sortedBorrowings.length}
+                onChange={handlePageChange}
+                style={{ marginTop: '20px', textAlign: 'right' }}
+              />
+            </Content>
+          </Layout>
+        </Layout>
+
+        <Modal
+    title="Return Product"
+    visible={isModalVisible}
+    onOk={handleReturnSubmit}
+    onCancel={handleCancel}
+    okText="Submit"
+  >
+    <p>Please upload an image of the returned product:</p>
+    <Upload
+  beforeUpload={(file) => {
+    setSelectedFile(file); // Set the selected file
+    return false; // Prevent automatic upload
+  }}
+  onRemove={() => setSelectedFile(null)} // Clear selected file on removal
+  fileList={selectedFile ? [selectedFile] : []} // Display the selected file
+  accept="image/*"
+>
+  <Button icon={<UploadOutlined />}>Select Image</Button>
+</Upload>
+
+  </Modal>
+      </div>
+    );
+  };
+
+  export default BorrowingPage;

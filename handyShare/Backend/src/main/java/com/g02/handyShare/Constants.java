@@ -25,4 +25,8 @@ public class Constants {
     public String getServerUrl() {
         return SERVER_URL;
     }
+
+    public String getSERVER_URL() {
+        return "http://localhost:8080";
+    }
 }

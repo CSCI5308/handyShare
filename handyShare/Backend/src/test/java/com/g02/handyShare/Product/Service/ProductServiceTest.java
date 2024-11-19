@@ -1,4 +1,4 @@
-package com.g02.handyShare.productService;
+package com.g02.handyShare.Product.Service;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -30,7 +30,7 @@ import com.g02.handyShare.User.Entity.User;
 import com.g02.handyShare.User.Repository.UserRepository;
 
 @RunWith(MockitoJUnitRunner.class)
-public class productServiceTest {
+public class ProductServiceTest {
 
     @InjectMocks
     private ProductService productService;
@@ -53,12 +53,8 @@ public class productServiceTest {
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-
-        // Set up the SecurityContext to return the mocked Authentication
         when(securityContext.getAuthentication()).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
-
-        // Ensure that the authentication mock is not null and configured correctly
         when(authentication.getName()).thenReturn("john@gmail.com");
     }
 

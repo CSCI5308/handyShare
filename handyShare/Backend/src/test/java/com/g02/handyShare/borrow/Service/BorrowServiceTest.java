@@ -1,4 +1,4 @@
-package com.g02.handyShare.borrow;
+package com.g02.handyShare.borrow.Service;
 
 import com.g02.handyShare.Product.Service.CustomException;
 import com.g02.handyShare.User.Repository.UserRepository;
