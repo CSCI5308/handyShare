@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import HeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar.js';
-import { message, Modal, List } from 'antd';
+import { message, Modal, List, Card } from 'antd'; // Added Card import
 import { MailOutlined, PhoneOutlined, StarFilled } from '@ant-design/icons';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import lenderService from '../services/lenderService.js'; 
 import LenderMap from '../components/LendingPage/LenderMap'; 
+
+
 
 const ProductPage = () => {
   const navigate = useNavigate();
@@ -20,7 +22,6 @@ const ProductPage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState("");
   const [selectedHours, setSelectedHours] = useState(1);
-  const [showTimeSelector, setShowTimeSelector] = useState(false);
   const [timeValid, setTimeValid] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [lenderProducts, setLenderProducts] = useState([]);
@@ -174,7 +175,7 @@ const ProductPage = () => {
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="heading-lg text-gray-800">{product.name}</h2>
           <p className="text-lg text-gray-600 mb-4">Price: <span className="font-semibold">${product.rentalPrice}/hour</span></p>
-          <p className="text-gray-600">Transaction Time: <span className="font-semibold">{product.transactionTime || '2'}</span> hours</p>
+          <p className="text-gray-600">Transaction Time: <span className="font-semibold">{selectedHours}</span> hours</p>
 
           {/* Hours Selector */}
           <div className="mt-4">
@@ -184,7 +185,6 @@ const ProductPage = () => {
               onChange={(e) => {
                 const hours = Number(e.target.value);
                 setSelectedHours(hours);
-                setShowTimeSelector(hours > 0);
               }}
               className="w-full p-2 border border-gray-300 rounded-md"
             >
@@ -197,26 +197,24 @@ const ProductPage = () => {
           </div>
 
           {/* Time Selector */}
-          {showTimeSelector && (
-            <div className="mt-4">
-              <label className="block text-lg font-medium mb-2">Select Date:</label>
-              <DatePicker
-                selected={selectedDate}
-                onChange={(date) => {
-                  setSelectedDate(date);
-                  setTimeValid(isValidDate(date));
-                }}
-                dateFormat="MMMM d, yyyy"
-                className="w-full p-2 border border-gray-300 rounded-md"
-                placeholderText="Choose a date"
-                minDate={new Date()}
-                maxDate={new Date(new Date().setDate(new Date().getDate() + MAX_DAYS_IN_ADVANCE))}
-              />
-            </div>
-          )}
+          <div className="mt-4">
+            <label className="block text-lg font-medium mb-2">Select Date:</label>
+            <DatePicker
+              selected={selectedDate}
+              onChange={(date) => {
+                setSelectedDate(date);
+                setTimeValid(isValidDate(date));
+              }}
+              dateFormat="MMMM d, yyyy"
+              className="w-full p-2 border border-gray-300 rounded-md"
+              placeholderText="Choose a date"
+              minDate={new Date()}
+              maxDate={new Date(new Date().setDate(new Date().getDate() + MAX_DAYS_IN_ADVANCE))}
+            />
+          </div>
 
           {/* Time of Day Selection */}
-          {showTimeSelector && selectedDate && timeValid && (
+          {selectedDate && timeValid && (
             <div className="mt-4">
               <label className="block text-lg font-medium mb-2">Select Time:</label>
               <input
@@ -307,7 +305,11 @@ const ProductPage = () => {
           <div>
             <div className="flex items-center mb-4">
               {lenderDetails.imageData ? (
-                <img src={lenderDetails.imageData} alt={lenderDetails.name} className="w-24 h-24 rounded-full object-cover mr-4" />
+                <img
+                  src={lenderDetails.imageData}
+                  alt={lenderDetails.name}
+                  className="w-24 h-24 rounded-full object-cover mr-4 shadow-lg"
+                />
               ) : (
                 <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center mr-4">
                   <span className="text-gray-500">No Image</span>
@@ -315,8 +317,14 @@ const ProductPage = () => {
               )}
               <div>
                 <h2 className="text-xl font-semibold">{lenderDetails.name}</h2>
-                <p><MailOutlined className="mr-2" /> {lenderDetails.email}</p>
-                {lenderDetails.phone && <p><PhoneOutlined className="mr-2" /> {lenderDetails.phone}</p>}
+                <p>
+                  <MailOutlined className="mr-2" /> {lenderDetails.email}
+                </p>
+                {lenderDetails.phone && (
+                  <p>
+                    <PhoneOutlined className="mr-2" /> {lenderDetails.phone}
+                  </p>
+                )}
               </div>
             </div>
             <div className="mb-4">
@@ -325,23 +333,42 @@ const ProductPage = () => {
               <p>Pincode: {lenderDetails.pincode || 'N/A'}</p>
             </div>
             <div>
-              <h3 className="font-semibold mb-2">Products by {lenderDetails.name}:</h3>
-              {lenderProducts.length > 0 ? (
-                <List
-                  itemLayout="horizontal"
-                  dataSource={lenderProducts}
-                  renderItem={item => (
-                    <List.Item>
-                      <List.Item.Meta
-                        title={<a href={`/product/${item.id}`}>{item.name}</a>}
-                        description={`Price: $${item.rentalPrice}/hour`}
+              <h3 className="font-semibold mb-4">Products by {lenderDetails.name}:</h3>
+              <List
+                grid={{ gutter: 16, column: 2 }}
+                dataSource={lenderProducts}
+                renderItem={(item) => (
+                  <List.Item>
+                    <Card
+                      hoverable
+                      className="flex flex-col items-center justify-center"
+                      cover={
+                        item.productImage ? (
+                          <img
+                            alt={item.name}
+                            src={item.productImage}
+                            className="h-40 object-cover"
+                          />
+                        ) : (
+                          <div className="h-40 bg-gray-200 flex items-center justify-center">
+                            <span className="text-gray-500">No Image Available</span>
+                          </div>
+                        )
+                      }
+                      onClick={() => navigate(`/product/${item.id}`)}
+                    >
+                      <Card.Meta
+                        title={
+                          <a href={`/product/${item.id}`} className="text-blue-600 hover:underline">
+                            {item.name}
+                          </a>
+                        }
+                        description={`Price: $${item.rentalPrice.toFixed(2)}/hour`}
                       />
-                    </List.Item>
-                  )}
-                />
-              ) : (
-                <p>No products listed by this lender.</p>
-              )}
+                    </Card>
+                  </List.Item>
+                )}
+              />
             </div>
           </div>
         ) : null}

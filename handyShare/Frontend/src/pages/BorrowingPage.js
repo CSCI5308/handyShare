@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Menu, Card, Select, Input, Pagination } from 'antd';
+import { Layout, Menu, Card, Select, Input, Pagination, Row, Col, Avatar, Typography } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import dayjs from 'dayjs';
@@ -10,6 +10,7 @@ dayjs.extend(duration);
 
 const { Content, Sider } = Layout;
 const { Option } = Select;
+const { Title, Text } = Typography;
 
 const BorrowingPage = () => {
   const [borrowings, setBorrowings] = useState([]);
@@ -70,7 +71,7 @@ const BorrowingPage = () => {
     if (!timeLeft) return null;
 
     return (
-      <div>
+      <div style={{ fontSize: '16px', fontWeight: 'bold' }}>
         {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m {timeLeft.seconds}s
       </div>
     );
@@ -100,6 +101,7 @@ const BorrowingPage = () => {
 
   const handleSearchChange = (e) => {
     setSearchText(e.target.value);
+    setCurrentPage(1);
   };
 
   const handlePageChange = (page) => {
@@ -109,8 +111,8 @@ const BorrowingPage = () => {
   return (
     <div>
       <HeaderBar />
-      <Layout>
-        <Sider width={200}>
+      <Layout style={{ minHeight: '100vh' }}>
+        <Sider width={220} style={{ background: '#fff' }}>
           <Menu
             mode="inline"
             defaultSelectedKeys={['borrowings']}
@@ -121,96 +123,98 @@ const BorrowingPage = () => {
           </Menu>
         </Sider>
         <Layout style={{ padding: '20px' }}>
-          <Content style={{ padding: '20px', background: '#fff' }}>
-            <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '10px' }}>Your Borrowed Items</h1>
-            
-            <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center' }}>
-              <span style={{ marginRight: '10px' }}>Sort:</span>
-              <Select
-                defaultValue={sortOrder}
-                onChange={handleSortChange}
-                style={{ width: 120, marginRight: '10px' }}
-              >
-                <Option value="Newest">Newest</Option>
-                <Option value="Oldest">Oldest</Option>
-              </Select>
-              <Input
-                placeholder="Search by name"
-                prefix={<SearchOutlined />}
-                value={searchText}
-                onChange={handleSearchChange}
-                style={{ marginBottom: '8px', width: '300px', marginTop: '10px' }}
-              />
-            </div>
+          <Content style={{ background: '#f9f9f9', padding: '30px', borderRadius: '8px' }}>
+            <Title level={2} style={{ marginBottom: '20px' }}>Your Borrowed Items</Title>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <Row gutter={[16, 16]} style={{ marginBottom: '20px' }} align="middle">
+              <Col xs={24} sm={12} md={8} lg={6}>
+                <Text strong>Sort By:</Text>
+                <Select
+                  value={sortOrder}
+                  onChange={handleSortChange}
+                  style={{ width: '100%', marginTop: '5px' }}
+                >
+                  <Option value="Newest">Newest</Option>
+                  <Option value="Oldest">Oldest</Option>
+                </Select>
+              </Col>
+              <Col xs={24} sm={12} md={16} lg={12}>
+                <Input
+                  placeholder="Search by product name"
+                  prefix={<SearchOutlined />}
+                  value={searchText}
+                  onChange={handleSearchChange}
+                  allowClear
+                />
+              </Col>
+            </Row>
+
+            <Row gutter={[24, 24]}>
               {currentItems.map((borrowing) => (
-                <Card key={borrowing.id} style={{ padding: '20px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    {/* Product section */}
-                    <div style={{ flex: 2, display: 'flex', alignItems: 'center' }}>
-                      <img
-                        src={borrowing.product.productImage}
-                        alt="product"
-                        style={{ width: '100px', height: '100px', marginRight: '20px', borderRadius: '5px' }}
-                      />
-                      <div>
-                        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold' }}>{borrowing.product.name}</h3>
-                        <p style={{ margin: '5px 0', fontSize: '14px' }}>{borrowing.product.description}</p>
-                        <p style={{ margin: '5px 0', fontSize: '14px' }}>Price: {borrowing.product.rentalPrice} AED/day</p>
-                        <p style={{ margin: '5px 0', fontSize: '14px' }}>
-                          Duration: {dayjs(borrowing.timerEnd).diff(dayjs(borrowing.timerStart), 'days')} days
-                        </p>
-                      </div>
-                    </div>
+                <Col xs={24} sm={24} md={12} lg={8} key={borrowing.id}>
+                  <Card hoverable>
+                    <Row gutter={[16, 16]}>
+                      {/* Product Section */}
+                      <Col span={24}>
+                        <Row gutter={[16, 16]}>
+                          <Col span={8}>
+                            <img
+                              src={borrowing.product.productImage}
+                              alt={borrowing.product.name}
+                              style={{ width: '100%', borderRadius: '8px' }}
+                            />
+                          </Col>
+                          <Col span={16}>
+                            <Title level={4}>{borrowing.product.name}</Title>
+                            <Text>{borrowing.product.description}</Text>
+                            <br />
+                            <Text strong>Price:</Text> {borrowing.product.rentalPrice} AED/day
+                            <br />
+                            <Text strong>Duration:</Text> {dayjs(borrowing.timerEnd).diff(dayjs(borrowing.timerStart), 'days')} days
+                          </Col>
+                        </Row>
+                      </Col>
 
-                    {/* Timer section */}
-                    <div style={{ flex: 1, textAlign: 'center' }}>
-                      <div style={{ 
-                        display: 'inline-block',
-                        padding: '10px',
-                        borderRadius: '50%',
-                        border: '2px solid #e0e0e0',
-                        boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)'
-                      }}>
-                        <AnalogTimer startDate={borrowing.timerStart} endDate={borrowing.timerEnd} />
-                      </div>
-                    </div>
+                      {/* Timer and Lender Section */}
+                      <Col span={24}>
+                        <Row justify="space-between" align="middle">
+                          {/* Timer */}
+                          <Col>
+                            <Text strong>Time Left:</Text>
+                            <AnalogTimer startDate={borrowing.timerStart} endDate={borrowing.timerEnd} />
+                          </Col>
 
-                    {/* Lender section */}
-                    <div style={{
-                      flex: 1,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      background: '#f0f0f0',
-                      borderRadius: '8px',
-                      padding: '15px'
-                    }}>
-                      <img
-                        src={borrowing.product.lender.imageData}
-                        alt="Lender"
-                        style={{
-                          width: '50px',
-                          height: '50px',
-                          borderRadius: '50%',
-                          marginBottom: '10px'
-                        }}
-                      />
-                      <p style={{ fontSize: '14px', fontWeight: 'bold' }}>{borrowing.product.lender.name}</p>
-                      <p style={{ fontSize: '12px', color: '#888' }}>{borrowing.product.lender.email}</p>
-                    </div>
-                  </div>
-                </Card>
+                          {/* Lender */}
+                          <Col>
+                            <Row align="middle" gutter={[8, 8]}>
+                              <Col>
+                                <Avatar
+                                  src={borrowing.product.lender.imageData}
+                                  size="large"
+                                />
+                              </Col>
+                              <Col>
+                                <Text strong>{borrowing.product.lender.name}</Text>
+                                <br />
+                                <Text type="secondary">{borrowing.product.lender.email}</Text>
+                              </Col>
+                            </Row>
+                          </Col>
+                        </Row>
+                      </Col>
+                    </Row>
+                  </Card>
+                </Col>
               ))}
-            </div>
+            </Row>
 
             <Pagination
               current={currentPage}
               pageSize={itemsPerPage}
               total={sortedBorrowings.length}
               onChange={handlePageChange}
-              style={{ marginTop: '20px', textAlign: 'right' }}
+              style={{ textAlign: 'center', marginTop: '20px' }}
+              showSizeChanger={false}
             />
           </Content>
         </Layout>
