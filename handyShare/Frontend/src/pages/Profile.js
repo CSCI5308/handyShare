@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Button, Layout, Menu, Form, Input, message, Table, Modal, Switch } from 'antd';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import ProfileHeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar';
+// import ProfileHeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar';
 import defaultImage from '../components/ProfileUpdatePage/defaultProfileImage.png';
+import AnimatedHeader from '../components/Header.js';
 import LendFormPage from '../components/LendingPage/LendFormPage.js';
 import EditLendForm from '../components/LendingPage/EditLendForm.js';
 import { SERVER_URL } from '../constants.js';
@@ -235,7 +236,7 @@ const Profile = () => {
 
   return (
     <div>
-      <ProfileHeaderBar />
+    <AnimatedHeader/>
       <Layout>
         <Sider width={200}>
           <Menu

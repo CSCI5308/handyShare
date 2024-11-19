@@ -1,127 +1,294 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'; 
-import HeaderBar from '../components/Homepage/HeaderBar.js';
-import { Layout, Button, theme } from 'antd'; 
-import CategoriesNavigation from '../components/Homepage/CategoriesNavigation.js';
-import ContentHomeScreen from '../components/Homepage/ContentHomeScreen.js';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { Layout, Button, Input, Skeleton } from 'antd';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaSearch, FaBox, FaChartLine, FaPlus, FaSpinner, FaCat, FaDog, FaFish } from 'react-icons/fa';
+import { SERVER_URL } from '../constants.js';
+import  AnimatedHeader   from '../components/Header.js';
 
-const { Header, Content, Footer, Sider } = Layout;
+const { Header, Content, Sider } = Layout;
 
-const HomeScreen = () => {
-  const {
-    token: { colorBgContainer, borderRadiusLG },
-  } = theme.useToken();
-
-  const headerHeight = 70; 
-  const [selectedCategory, setSelectedCategory] = useState(''); 
-  const navigate = useNavigate(); 
+const EnhancedHomeScreen = () => {
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [trending, setTrending] = useState([]);
+  const [newlyAdded, setNewlyAdded] = useState([]);
+  const [hasProducts, setHasProducts] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Extract token and role from URL if present
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
     const role = urlParams.get('role');
     
-    // Save token and role to localStorage if they exist in the URL
     if (token) {
       localStorage.setItem('token', token);
       localStorage.setItem('role', role);
-      
-      // Clean up the URL by removing the token and role query parameters
       window.history.replaceState({}, document.title, window.location.pathname);
     } else if (!localStorage.getItem('token')) {
-      // Redirect to login if no token is present in the URL or localStorage
       navigate('/login');
     }
+
+    fetchCategories();
   }, [navigate]);
 
-  // Function to handle category selection
+  useEffect(() => {
+    if (selectedCategory) {
+      fetchTrending();
+      fetchNewListings();
+    }
+  }, [selectedCategory]);
+
+  const fetchCategories = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await axios.get("http://localhost:8080/api/v1/user/allCategories", {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
+      });
+      setCategories(response.data);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching categories", error);
+      setIsLoading(false);
+    }
+  };
+
+  const fetchTrending = async () => {
+    setIsLoading(true);
+    const token = localStorage.getItem('token');
+    try {
+      const response = await axios.get(SERVER_URL + `/api/v1/user/getTrendingByCategory?category=${selectedCategory}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
+      });
+      setTrending(response.data?.body || []);
+      setHasProducts(response.data?.body?.length > 0);
+      setIsLoading(false);
+    } catch (error) {
+      console.log("Error while loading trending topics", error);
+      setHasProducts(false);
+      setIsLoading(false);
+    }
+  };
+
+  const fetchNewListings = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await axios.get(SERVER_URL + `/api/v1/user/newly-added?category=${selectedCategory}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
+      });
+      setNewlyAdded(response.data || []);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleCategorySelect = (category) => {
     setSelectedCategory(category);
   };
 
-  // Function to handle "View Products" button click
   const handleViewProductsClick = () => {
-    navigate('/products'); 
+    navigate('/products');
   };
 
+  const filteredTrending = trending.filter(item => 
+    item.product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredNewlyAdded = newlyAdded.filter(item => 
+    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const CategoryButton = ({ category }) => (
+    <motion.div
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+    >
+      <Button 
+        style={{ width: '100%', height: '60px', marginBottom: '10px', background: '#f0f2f5' }}
+        onClick={() => handleCategorySelect(category.name)}
+      >
+        {category.name}
+      </Button>
+    </motion.div>
+  );
+
+  const ProductCard = ({ name, description, rentalPrice, productImage, productID }) => (
+    <motion.div 
+      whileHover={{ scale: 1.05 }}
+      style={{
+        width: 200,
+        background: '#ffffff',
+        borderRadius: '10px',
+        padding: '10px',
+        marginRight: '20px',
+        boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+        
+      }}
+      onClick={() => navigate(`/product/${productID}`)}
+    >
+      <img src={productImage || '/placeholder.svg'} alt={name} style={{ width: '100%', height: 150, objectFit: 'cover', borderRadius: '10px' }} />
+      <h3 style={{ color: '#3B7BF8' }}>{name}</h3>
+      <p style={{ color: '#666' }}>{description}</p>
+      <p style={{ color: '#3B7BF8', fontWeight: 'bold' }}>${rentalPrice}/hr</p>
+    </motion.div>
+  );
+
+  
+
   return (
-    <Layout style={{ minHeight: '100vh' }}> {/* Ensures the layout fills the viewport */}
-      {/* Fixed Header */}
-      <Header
+    <Layout style={{ minHeight: '100vh', background: '#f9f9f9' }}>
+      <motion.header
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         style={{
-          position: 'fixed', // Fixes the header at the top
+          position: 'fixed',
           top: 0,
           left: 0,
           right: 0,
-          zIndex: 1000, // Ensures the header stays on top
+          zIndex: 1000,
+          background: '#3B7BF8',
+          padding: '10px 20px',
           display: 'flex',
           alignItems: 'center',
-          background: '#3B7BF8',
-          justifyContent: 'center',
-          height: '10%', // Set the height of the header
-          width: '100%',
+          justifyContent: 'space-between',
+          
         }}
       >
-        <HeaderBar />
-      </Header>
+       <AnimatedHeader/>
+      </motion.header>
 
-      {/* Main Content Area */}
-      <Content> {/* Adds padding to avoid overlapping */}
-        <Layout
-          style={{
-            padding: '24px 48px', 
-            background: colorBgContainer,
-            borderRadius: borderRadiusLG,
-            minHeight: '100vh',
-            marginTop: `${headerHeight}px`, 
-            overflow: 'auto', // Allows scrolling of content area
-          }}
-        >
-          {/* Scrollable Sidebar and Content */}
-          <Sider
-            style={{
-              background: 'white',
-              height: '100vh', // Full height for Sider
-              overflowY: 'auto', // Enable scrolling in the sidebar
-              scrollbarWidth: 'none',
-              position: 'sticky', // Keeps it sticky when scrolling
-              top: 0,
-            }}
-            width={200} // Set fixed width for the Sider
+      <Layout style={{ marginTop: '60px', background: '#f9f9f9' , marginTop :100}}>
+        <Sider width={200} style={{ background: '#f9f9f9' }}>
+          <motion.div
+            initial={{ x: -200 }}
+            animate={{ x: 0 }}
+            transition={{ type: 'spring', stiffness: 100 }}
           >
-            <CategoriesNavigation onCategorySelect={handleCategorySelect} /> {/* Pass handler to CategoriesNavigation */}
-          </Sider>
-
+            {categories.map((category, index) => (
+              <CategoryButton key={index} category={category} />
+            ))}
+          </motion.div>
+        </Sider>
+        <Layout style={{ padding: '24px' }}>
           <Content
             style={{
-              padding: '0 24px',
-              minHeight: '280px',
-              overflowY: 'auto', // Enables scrolling for the main content
+              padding: 24,
+              margin: 0,
+              minHeight: 280,
+              background: '#ffffff',
+              borderRadius: '10px',
             }}
           >
-            <ContentHomeScreen category={selectedCategory} />
-
-            {/* View Products Button */}
-            <div style={{ marginTop: '24px', textAlign: 'center' }}>
-              <Button type="primary" onClick={handleViewProductsClick}>
+            <AnimatePresence mode="wait">
+              {isLoading ? (
+                <motion.div
+                  key="loading"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <Skeleton active paragraph={{ rows: 4 }} />
+                </motion.div>
+              ) : selectedCategory ? (
+                <motion.div
+                  key={selectedCategory}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <h2>{selectedCategory}</h2>
+                  {
+                    <>
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                      >
+                        <h3><FaChartLine /> Trending Products</h3>
+                        <div style={{ display: 'flex', overflowX: 'auto' }}  >
+                          {filteredTrending.map((item, index) => (
+                            <ProductCard
+                              key={index}
+                              productID = {item.product.id}
+                              name={item.product.name}
+                              description={item.product.description}
+                              rentalPrice={item.product.rentalPrice}
+                              productImage={item.product.productImage}
+                             
+                            />
+                          ))}
+                        </div>
+                      </motion.div>
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.4 }}
+                      >
+                        <h3><FaBox /> Newly Listed</h3>
+                        <div style={{ display: 'flex', overflowX: 'auto' }}>
+                          {filteredNewlyAdded.map((item, index) => (
+                            <ProductCard
+                              key={index}
+                              name={item.name}
+                              productID={item.id}
+                              description={item.description}
+                              rentalPrice={item.rentalPrice}
+                              productImage={item.productImage}
+                            />
+                          ))}
+                        </div>
+                      </motion.div>
+                    </>
+                   }
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="no-selection"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5 }}
+                  style={{ textAlign: 'center', padding: '50px' }}
+                >
+                  <FaSpinner className="animate-spin" style={{ fontSize: '48px', color: '#3B7BF8' }} />
+                  <h2>Select a category to view products</h2>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            <motion.div
+              style={{ marginTop: '24px', textAlign: 'center' }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Button type="primary" onClick={handleViewProductsClick} size="large">
                 View All Products
               </Button>
-            </div>
+            </motion.div>
           </Content>
         </Layout>
-      </Content>
-
-      {/* Footer */}
-      <Footer
+      </Layout>
+      <motion.footer
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1 }}
         style={{
           textAlign: 'center',
+          background: '#f0f2f5',
+          padding: '24px',
         }}
       >
-        Ant Design ©{new Date().getFullYear()} Created by Ant UED
-      </Footer>
+        HandyShare ©{new Date().getFullYear()} - Share What You Have
+      </motion.footer>
     </Layout>
   );
 };
 
-export default HomeScreen;
+export default EnhancedHomeScreen;
+

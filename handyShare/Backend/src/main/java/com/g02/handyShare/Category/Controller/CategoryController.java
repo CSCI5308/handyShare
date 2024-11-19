@@ -33,11 +33,7 @@ public class CategoryController {
         category.setName((String) categoryData.get("name"));
         category.setDescription((String) categoryData.get("description"));
 
-        if (categoryData.containsKey("parent_category_id")) {
-            Long parentCategoryId = Long.valueOf(categoryData.get("parent_category_id").toString());
-            category.setParentCategory(categoryService.getCategoryById(parentCategoryId)
-                    .orElseThrow(() -> new RuntimeException("Parent category not found")));
-        }
+        
 
         // Set the isActive status from the incoming data, defaulting to true if not provided
         Boolean isActive = (Boolean) categoryData.getOrDefault("isActive", true);
@@ -85,10 +81,7 @@ public class CategoryController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/tree")
-    public List<Category> getCategoryTree() {
-        return categoryService.getCategoryTree();
-    }
+  
 
     @RequestMapping(method = RequestMethod.OPTIONS)
     public void handleOptions() {

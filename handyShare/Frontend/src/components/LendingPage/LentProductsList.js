@@ -7,7 +7,8 @@ import { SERVER_URL } from '../../constants.js';
 const { Text, Title } = Typography;
 
 const LentProductsList = ({ lentItems, onRefresh }) => {
-  const handleReturnItem = async (borrowId) => {
+   const handleReturnItem = async (id) => {
+ 
     try {
       const token = localStorage.getItem('token'); // Retrieve token from local storage
       if (!token) {
@@ -17,11 +18,11 @@ const LentProductsList = ({ lentItems, onRefresh }) => {
   
       // API call to return the product
       await axios.post(
-        `${SERVER_URL}/api/v1/user/productReturned`, // Update to the correct API endpoint
-        {borrowId}, // Pass borrowId in the request body
-        {
-          headers: { Authorization: `Bearer ${token}` }, // Include the Bearer token
-           'Content-Type': 'application/json', // Explicitly set Content-Type
+         `${SERVER_URL}/api/v1/user/product/ReturnedLender`,
+        {borrowId : id },
+        { 
+          headers: { Authorization: `Bearer ${token}` },
+ 
           withCredentials: true
         }
       );

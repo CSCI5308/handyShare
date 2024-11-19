@@ -25,18 +25,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         Optional<Category> category = categoryRepository.findById(categoryId);
 
-        // Fetch and map subcategories
-        if (category.isPresent()) {
-            List<Category> allCategories = categoryRepository.findAll();
-            List<SubCategoryDTO> subCategoryDTOs = allCategories.stream()
-                    .filter(subCategory -> subCategory.getParentCategory() != null &&
-                            subCategory.getParentCategory().getCategoryId().equals(categoryId))
-                    .map(subCategory -> new SubCategoryDTO(subCategory.getCategoryId(), subCategory.getName()))
-                    .toList();
-
-            category.get().setSubCategories(subCategoryDTOs);
-        }
-
+        
         return category;
     }
 
@@ -60,9 +49,7 @@ public class CategoryServiceImpl implements CategoryService {
         if (categoryDetails.getIsActive() != null) {
             category.setIsActive(categoryDetails.getIsActive());
         }
-        if (categoryDetails.getParentCategory() != null) {
-            category.setParentCategory(categoryDetails.getParentCategory());
-        }
+        
         if (categoryDetails.getSortOrder() != null) {
             category.setSortOrder(categoryDetails.getSortOrder());
         }
@@ -77,20 +64,5 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepository.delete(category);
     }
 
-    @Override
-    public List<Category> getCategoryTree() {
-        List<Category> allCategories = categoryRepository.findAll();
-        return allCategories.stream()
-                .filter(category -> category.getParentCategory() == null)
-                .peek(parent -> parent.setSubCategories(getSubCategoryDTOs(parent.getCategoryId(), allCategories)))
-                .toList();
-    }
-
-    private List<SubCategoryDTO> getSubCategoryDTOs(Long parentId, List<Category> allCategories) {
-        return allCategories.stream()
-                .filter(category -> category.getParentCategory() != null &&
-                        category.getParentCategory().getCategoryId().equals(parentId))
-                .map(subCategory -> new SubCategoryDTO(subCategory.getCategoryId(), subCategory.getName()))
-                .toList();
-    }
+     
 }

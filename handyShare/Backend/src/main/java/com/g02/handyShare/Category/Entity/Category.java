@@ -31,18 +31,7 @@ public class Category {
     @Column(nullable = true)
     private Integer sortOrder;
 
-    @ManyToOne // Relationship for parent category
-    @JoinColumn(name = "parent_category_id", referencedColumnName = "categoryId")
-    private Category parentCategory;
-
-//    @Transient  // This annotation indicates that the field should not be persisted in the database
-//    private List<Category> subCategories;
-
-    @Transient  // This annotation indicates that the field should not be persisted in the database
-    private List<SubCategoryDTO> subCategories;
-
-
-    // Constructors, Getters, Setters
+    
 
     public Category() {
     }
@@ -57,16 +46,7 @@ public class Category {
         updatedAt = LocalDateTime.now();
     }
 
-    // Getters and setters for subcategories
-    public List<SubCategoryDTO> getSubCategories() {
-        return subCategories;
-    }
-
-    public void setSubCategories(List<SubCategoryDTO> subCategories) {
-        this.subCategories = subCategories;
-    }
-
-    // Getters and setters
+     
     public Long getCategoryId() {
         return categoryId;
     }
@@ -124,11 +104,5 @@ public class Category {
         this.sortOrder = sortOrder;
     }
 
-    public Category getParentCategory() {
-        return parentCategory;
-    }
-
-    public void setParentCategory(Category parentCategory) {
-        this.parentCategory = parentCategory;
-    }
+     
 }
