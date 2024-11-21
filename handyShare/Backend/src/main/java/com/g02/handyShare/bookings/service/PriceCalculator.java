@@ -12,7 +12,7 @@ import com.g02.handyShare.Product.Repository.ProductRepository;
 import com.g02.handyShare.User.Repository.UserRepository;
 import com.g02.handyShare.bookings.entity.Bookings;
 import com.g02.handyShare.bookings.repository.BookingRepository;
-
+//user-story - 94 : calculation for the penulties(5% more in hourly price) and total payments with 2% platform fees
 @Service
 public class PriceCalculator {
 
