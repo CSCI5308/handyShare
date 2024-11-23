@@ -3,10 +3,10 @@ name: HandyShare CI/CD
 on:
   push:
     branches:
-      - zzivaibhav-patch-1
+      - ci/cd-test
   pull_request:
     branches:
-      - zzivaibhav-patch-1
+      - ci/cd-test
   workflow_dispatch:
 
 jobs:
