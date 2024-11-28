@@ -29,7 +29,7 @@ export default function Signup() {
     const payload = { name, email, password };
 
     try {
-      const response = await axios.post('http://172.17.0.99:8080/api/v1/all/register', payload);
+      const response = await axios.post('http://localhost:8080/api/v1/all/register', payload);
       setSuccessMessage('Registration successful! Please check your email for verification.');
       setTimeout(() => navigate('/login'), 3000);
     } catch (error) {

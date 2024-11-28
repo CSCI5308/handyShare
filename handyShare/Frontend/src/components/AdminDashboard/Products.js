@@ -47,7 +47,7 @@ const Products = () => {
   const handleDelete = async (id) => {
     try {
       const token = localStorage.getItem('token'); // Retrieve user token
-      await axios.delete(`http://172.17.0.99:8080/api/v1/user/product/delete/${id}`, {
+      await axios.delete(`http://localhost:8080/api/v1/user/product/delete/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`, // Include token in the request header
         },
@@ -102,7 +102,7 @@ const Products = () => {
     try {
       if (editMode) {
         // Update product
-        await axios.put(`http://172.17.0.99:8080/api/v1/user/products/update/${selectedProduct.id}`, newProduct, {
+        await axios.put(`http://localhost:8080/api/v1/user/products/update/${selectedProduct.id}`, newProduct, {
           headers: {
             Authorization: `Bearer ${token}`, // Include token in the request header
           },
@@ -111,7 +111,7 @@ const Products = () => {
         message.success('Product updated successfully');
       } else {
         // Create new product
-        await axios.post(`http://172.17.0.99:8080/api/v1/user/add`, newProduct, {
+        await axios.post(`http://localhost:8080/api/v1/user/add`, newProduct, {
           headers: {
             Authorization: `Bearer ${token}`, // Include token in the request header
           },

@@ -30,10 +30,15 @@ public class Review {
     }
 
 
+    public Review() {
+        // Default constructor for JPA
+    }    
+
+
     public Review(Long userId, Long productId, String reviewText, int rating, String image) {
         this.userId = userId;
         this.productId = productId;
-        this.reviewText = reviewText;
+        this.reviewText = reviewText;  
         this.rating = rating;
         this.image = image;
     }
@@ -64,11 +69,11 @@ public class Review {
     }
 
     public String getReviewText() {
-        return reviewText;
+        return reviewText;  
     }
 
     public void setReviewText(String reviewText) {
-        this.reviewText = reviewText;
+        this.reviewText = reviewText;  
     }
 
     public int getRating() {

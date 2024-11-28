@@ -6,8 +6,7 @@ import com.g02.handyShare.Product.Entity.Product;
 import com.g02.handyShare.Product.Repository.ProductRepository;
 import com.g02.handyShare.User.Entity.User;
 import com.g02.handyShare.User.Repository.UserRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,70 +23,63 @@ import java.util.Optional;
 @Service
 public class ProductService {
 
-    private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
-
-    private static final String PRODUCT_NOT_FOUND_MSG = "Product not found with id: ";
-    private static final String UNAUTHORIZED_ACTION_MSG = "You are not authorized to update this product.";
-    private static final String ERROR_ADDING_PRODUCT_MSG = "Error while adding your product, please try again later.";
-    private static final String ERROR_UPDATING_PRODUCT_MSG = "Error while updating the product. Please try again later.";
-
     @Autowired
     private ProductRepository productRepository;
 
     private FirebaseService firebaseService;
 
     @Autowired
-    public void setFirebaseService(FirebaseService firebaseService) {
+    public void Controller(FirebaseService firebaseService) {
         this.firebaseService = firebaseService;
     }
 
     @Autowired
     private UserRepository userRepository;
 
-    // Helper method for getting the current authenticated user
-    private User getAuthenticatedUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return userRepository.findByEmail(authentication.getName());
-    }
-
     public ResponseEntity<?> addProduct(Product product, MultipartFile file) {
-        try {
-            User owner = getAuthenticatedUser();
-            String imageUrl = firebaseService.uploadFile(file, "product_images");
-            logger.info("Image URL: " + imageUrl);
 
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            System.out.println(authentication.getName());
+            System.out.println(authentication.getPrincipal());
+            
+            User owner = userRepository.findByEmail(authentication.getName());
+            String imageUrl = firebaseService.uploadFile(file, "product_images");
+            System.out.println("------------------------------------------------------------" + imageUrl);
             product.setLender(owner);
             product.setProductImage(imageUrl);
             product.setAvailable(true);
-
-            Product savedProduct = productRepository.save(product);
-            return ResponseEntity.ok(savedProduct);
+            Product saved = productRepository.save(product);
+            return ResponseEntity.ok().body(saved);
         } catch (IOException e) {
-            logger.error("Error while uploading the product image", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ERROR_ADDING_PRODUCT_MSG);
+            return ResponseEntity.internalServerError()
+                    .body("ERROR WHILE ADDING YOUR PRODUCT, PLEASE TRY AGAIN AFTER SOME TIME.");
         }
+
     }
 
+    // Add multiple products
     public List<Product> addProduct(List<Product> products) {
         return productRepository.saveAll(products);
     }
 
     public Product getProductById(Long id) {
         return productRepository.findById(id)
-                .orElseThrow(() -> new CustomException(PRODUCT_NOT_FOUND_MSG + id));
+                .orElseThrow(() -> new CustomException("Product not Found!"));
     }
 
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
 
+    // delete product
     public boolean deleteProduct(Long productId) {
         if (productRepository.existsById(productId)) {
             productRepository.deleteById(productId);
             return true;
+        } else {
+            return false;
         }
-        return false;
     }
 
     public List<Product> getNewlyAddedProductsByCategory(String category) {
@@ -96,56 +88,93 @@ public class ProductService {
     }
 
     public List<Product> listProductsForUser() {
-        String email = getAuthenticatedUser().getEmail();
-        return productRepository.findByLenderEmail(email);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println(authentication.getName());
+        String email = authentication.getName();
+        List<Product> response = productRepository.findByLenderEmail(email);
+        return response;
     }
 
+    // New Update Method
     public ResponseEntity<?> updateProduct(Long id, Product updatedProduct, MultipartFile file) {
         try {
-            User owner = getAuthenticatedUser();
-            Product existingProduct = productRepository.findById(id)
-                    .orElseThrow(() -> new CustomException(PRODUCT_NOT_FOUND_MSG + id));
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String userEmail = authentication.getName();
+            User owner = userRepository.findByEmail(userEmail);
 
+            Product existingProduct = productRepository.findById(id)
+                    .orElseThrow(() -> new CustomException("Product not found with id: " + id));
+
+            // Check if the authenticated user is the owner of the product
             if (!existingProduct.getLender().getId().equals(owner.getId())) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                        .body(UNAUTHORIZED_ACTION_MSG);
+                        .body("You are not authorized to update this product.");
             }
 
+            // If a new image is provided, upload it and update the image URL
             if (file != null && !file.isEmpty()) {
                 String imageUrl = firebaseService.uploadFile(file, "product_images");
                 existingProduct.setProductImage(imageUrl);
             }
 
+            // Update the product fields
             existingProduct.setName(updatedProduct.getName());
             existingProduct.setDescription(updatedProduct.getDescription());
             existingProduct.setCategory(updatedProduct.getCategory());
             existingProduct.setRentalPrice(updatedProduct.getRentalPrice());
             existingProduct.setAvailable(updatedProduct.getAvailable());
 
+            // Save the updated product
             Product savedProduct = productRepository.save(existingProduct);
+
             return ResponseEntity.ok(savedProduct);
         } catch (IOException e) {
-            logger.error("Error while updating the product", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ERROR_UPDATING_PRODUCT_MSG);
+                    .body("Error while updating the product. Please try again later.");
         }
     }
+
 
     public ResponseEntity<?> changeAvailability(Long id, Boolean status) {
-        User owner = getAuthenticatedUser();
+        // Get the authenticated user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+        User owner = userRepository.findByEmail(userEmail);
+    
+        // Retrieve the product by ID
         Product item = productRepository.findById(id)
-                .orElseThrow(() -> new CustomException(PRODUCT_NOT_FOUND_MSG + id));
-
+                .orElseThrow(() -> new CustomException("Product not found with id: " + id));
+    
+        // Check if the authenticated user is the owner of the product
         if (!owner.getId().equals(item.getLender().getId())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(UNAUTHORIZED_ACTION_MSG);
+                    .body("You are not authorized to update this product.");
         }
-
+    
+        // Update the available status and save the product
         item.setAvailable(status);
-        productRepository.save(item);
-
+        productRepository.save(item);  // Save the updated product to the database
+    
         return ResponseEntity.ok("Product availability updated successfully.");
     }
+    
+    
+  //  public Product updateProduct(Long id, Product updatedProduct) {
+  //      Optional<Product> existingProductOptional = productRepository.findById(id);
+
+  //       if (existingProductOptional.isPresent()){
+  //            Product existingProduct = existingProductOptional.get();
+             //update fields
+  //           existingProduct.setName(updatedProduct.getName());
+  //           existingProduct.setDescription(updatedProduct.getDescription());
+  //           existingProduct.setCategory(updatedProduct.getCategory());
+  //           existingProduct.setRentalPrice(updatedProduct.getRentalPrice());
+  //           existingProduct.setAvailable(updatedProduct.getAvailable());
+  //           return productRepository.save(existingProduct);
+  //       } else {
+  //           throw new CustomException("Product not found with id: "+ id);
+  //       }
+  //  }
 
     public List<Product> getProductsByLenderEmail(String email) {
         return productRepository.findByLenderEmail(email);

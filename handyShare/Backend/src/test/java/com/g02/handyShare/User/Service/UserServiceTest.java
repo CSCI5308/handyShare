@@ -140,7 +140,7 @@
 //        // Arrange
 //        when(userRepository.findByEmail(testUser.getEmail())).thenReturn(null);
 //        when(passwordEncoder.encode(testUser.getPassword())).thenReturn("encodedPassword");
-//        when(constants.getSERVER_URL()).thenReturn("http://172.17.0.99:8080");
+//        when(constants.getSERVER_URL()).thenReturn("http://localhost:8080");
 //        when(emailService.sendEmail(eq(testUser.getEmail()), anyString(), anyString())).thenReturn("Success");
 //
 //        // Act
@@ -327,7 +327,7 @@ class UserServiceTest {
        // Arrange
        when(userRepository.findByEmail(testUser.getEmail())).thenReturn(null);
        when(passwordEncoder.encode(testUser.getPassword())).thenReturn("encodedPassword");
-       when(constants.getSERVER_URL()).thenReturn("http://172.17.0.99:8080");
+       when(constants.getSERVER_URL()).thenReturn("http://localhost:8080");
        when(emailService.sendEmail(eq(testUser.getEmail()), anyString(), anyString())).thenReturn("Success");
 
        // Act

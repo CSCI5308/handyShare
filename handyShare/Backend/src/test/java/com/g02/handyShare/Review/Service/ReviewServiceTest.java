@@ -3,7 +3,6 @@ package com.g02.handyShare.Review.Service;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.g02.handyShare.Review.Dto.ReviewCreateDTO;
 import com.g02.handyShare.Review.Dto.ReviewWithUserDTO;
 import com.g02.handyShare.Review.Entity.Review;
 import com.g02.handyShare.Review.Repository.ReviewRepository;
@@ -60,18 +59,10 @@ class ReviewServiceTest {
         int rating = 5;
         String imageUrl = "image_url";
 
-        // Create ReviewCreateDTO object
-        ReviewCreateDTO reviewCreateDTO = new ReviewCreateDTO();
-        reviewCreateDTO.setUserId(userId);
-        reviewCreateDTO.setProductId(productId);
-        reviewCreateDTO.setReviewText(reviewText);
-        reviewCreateDTO.setRating(rating);
-        reviewCreateDTO.setImage(image);
-
         when(firebaseService.uploadFile(image, "/reviews")).thenReturn(imageUrl);
         when(reviewRepository.save(any(Review.class))).thenReturn(new Review(userId, productId, reviewText, rating, imageUrl));
 
-        Review review = reviewService.createReview(reviewCreateDTO);
+        Review review = reviewService.createReview(userId, productId, reviewText, rating, image);
 
         assertNotNull(review);
         assertEquals(imageUrl, review.getImage());
@@ -84,17 +75,9 @@ class ReviewServiceTest {
         String reviewText = "Great!";
         int rating = 4;
 
-        // Create ReviewCreateDTO object
-        ReviewCreateDTO reviewCreateDTO = new ReviewCreateDTO();
-        reviewCreateDTO.setUserId(userId);
-        reviewCreateDTO.setProductId(productId);
-        reviewCreateDTO.setReviewText(reviewText);
-        reviewCreateDTO.setRating(rating);
-        reviewCreateDTO.setImage(null);  // No image provided
-
         when(reviewRepository.save(any(Review.class))).thenReturn(new Review(userId, productId, reviewText, rating, null));
 
-        Review review = reviewService.createReview(reviewCreateDTO);
+        Review review = reviewService.createReview(userId, productId, reviewText, rating, null);
 
         assertNotNull(review);
         assertNull(review.getImage());

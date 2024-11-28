@@ -43,7 +43,7 @@ class CorsFilterTest {
         corsFilter.doFilterInternal(request, response, filterChain);
 
         // Assert
-        assertEquals("http://172.17.0.99:3000", response.getHeader("Access-Control-Allow-Origin"));
+        assertEquals("http://localhost:3000", response.getHeader("Access-Control-Allow-Origin"));
         assertEquals("GET, POST, PUT, DELETE, OPTIONS, PATCH", response.getHeader("Access-Control-Allow-Methods"));
         assertEquals("3600", response.getHeader("Access-Control-Max-Age"));
         assertEquals("authorization, content-type, xsrf-token", response.getHeader("Access-Control-Allow-Headers"));
@@ -63,7 +63,7 @@ class CorsFilterTest {
         corsFilter.doFilterInternal(request, response, filterChain);
 
         // Assert
-        assertEquals("http://172.17.0.99:3000", response.getHeader("Access-Control-Allow-Origin"));
+        assertEquals("http://localhost:3000", response.getHeader("Access-Control-Allow-Origin"));
         assertEquals("GET, POST, PUT, DELETE, OPTIONS, PATCH", response.getHeader("Access-Control-Allow-Methods"));
         assertEquals("3600", response.getHeader("Access-Control-Max-Age"));
         assertEquals("authorization, content-type, xsrf-token", response.getHeader("Access-Control-Allow-Headers"));
@@ -82,7 +82,7 @@ class CorsFilterTest {
         corsFilter.doFilterInternal(request, response, filterChain);
 
         // Assert
-        assertEquals("http://172.17.0.99:3000", response.getHeader("Access-Control-Allow-Origin"));
+        assertEquals("http://localhost:3000", response.getHeader("Access-Control-Allow-Origin"));
         assertEquals("GET, POST, PUT, DELETE, OPTIONS, PATCH", response.getHeader("Access-Control-Allow-Methods"));
         assertEquals("3600", response.getHeader("Access-Control-Max-Age"));
         assertEquals("authorization, content-type, xsrf-token", response.getHeader("Access-Control-Allow-Headers"));
