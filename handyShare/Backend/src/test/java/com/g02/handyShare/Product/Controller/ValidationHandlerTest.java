@@ -49,7 +49,7 @@ public class ValidationHandlerTest {
         CustomException customException = new CustomException(errorMessage);
 
         // Act
-        ResponseEntity<String> response = validationHandler.handleProductNotFoundException(customException);
+        ResponseEntity<String> response = validationHandler.handleCustomException(customException);
 
         // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());

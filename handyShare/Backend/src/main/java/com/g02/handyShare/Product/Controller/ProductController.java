@@ -40,9 +40,11 @@ public class ProductController {
     }
 
     @PostMapping("/user/add")
-    public ResponseEntity<?> addProduct(@ModelAttribute @Valid Product product,
+    public ResponseEntity<?> addProducts(@ModelAttribute @Valid Product product,
                                         @RequestParam("image") MultipartFile file) {
-        return productService.addProduct(product, file);
+        ResponseEntity<?> savedProduct = productService.addProduct(product, file);
+
+        return new ResponseEntity<>(savedProduct, HttpStatus.CREATED);
     }
 
     @GetMapping("/user/product/{id}")
