@@ -3,6 +3,7 @@ package com.g02.handyShare.Review.Controller;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.g02.handyShare.Review.Dto.ReviewCreateDTO;
 import com.g02.handyShare.Review.Dto.ReviewResponse;
 import com.g02.handyShare.Review.Dto.ReviewWithUserDTO;
 import com.g02.handyShare.Review.Entity.Review;
@@ -88,16 +89,19 @@ class ReviewControllerTest {
 
     @Test
     public void testCreateReview_Success() throws Exception {
-        Long userId = 1L;
-        Long productId = 1L;
-        String reviewText = "Excellent!";
-        int rating = 5;
-        MultipartFile image = null;
+        // Create the DTO object for the request
+        ReviewCreateDTO reviewCreateDTO = new ReviewCreateDTO();
+        reviewCreateDTO.setUserId(1L);
+        reviewCreateDTO.setProductId(1L);
+        reviewCreateDTO.setReviewText("Excellent!");
+        reviewCreateDTO.setRating(5);
+        reviewCreateDTO.setImage(null);  // Assuming no image is provided
 
-        Review review = new Review(userId, productId, reviewText, rating, null);
-        when(reviewService.createReview(userId, productId, reviewText, rating, image)).thenReturn(review);
+        // Create the Review entity as expected return
+        Review review = new Review(1L, 1L, "Excellent!", 5, null);
+        when(reviewService.createReview(reviewCreateDTO)).thenReturn(review);
 
-        ResponseEntity<ReviewResponse> response = reviewController.createReview(userId, productId, reviewText, rating, image);
+        ResponseEntity<ReviewResponse> response = reviewController.createReview(reviewCreateDTO);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals("Review created successfully", response.getBody().getMessage());
@@ -106,16 +110,19 @@ class ReviewControllerTest {
 
     @Test
     public void testCreateReview_Failure() throws Exception {
-        Long userId = 1L;
-        Long productId = 1L;
-        String reviewText = "Bad review";
-        int rating = 1;
-        MultipartFile image = null;
+        // Create the DTO object for the request
+        ReviewCreateDTO reviewCreateDTO = new ReviewCreateDTO();
+        reviewCreateDTO.setUserId(1L);
+        reviewCreateDTO.setProductId(1L);
+        reviewCreateDTO.setReviewText("Bad review");
+        reviewCreateDTO.setRating(1);
+        reviewCreateDTO.setImage(null);  // Assuming no image is provided
 
-        when(reviewService.createReview(userId, productId, reviewText, rating, image)).thenThrow(new RuntimeException("Error"));
+        // Mock the service to throw an exception
+        when(reviewService.createReview(reviewCreateDTO)).thenThrow(new RuntimeException("Error"));
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
-            reviewController.createReview(userId, productId, reviewText, rating, image);
+            reviewController.createReview(reviewCreateDTO);
         });
 
         assertEquals("Error", exception.getMessage());

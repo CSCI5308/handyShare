@@ -1,6 +1,7 @@
 package com.g02.handyShare.Review.Service;
 
 import com.g02.handyShare.Config.Firebase.FirebaseService;
+import com.g02.handyShare.Review.Dto.ReviewCreateDTO;
 import com.g02.handyShare.Review.Dto.ReviewWithUserDTO;
 import com.g02.handyShare.Review.Entity.Review;  
 import com.g02.handyShare.Review.Repository.ReviewRepository;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 public class ReviewService {
 
     @Autowired
-    private ReviewRepository reviewRepository;  
+    private ReviewRepository reviewRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -32,11 +33,11 @@ public class ReviewService {
 
         public List<ReviewWithUserDTO> getReviewsForProduct(Long productId) {
         List<Review> reviews = reviewRepository.findByProductId(productId);
-        
+
         return reviews.stream().map(review -> {
             String username = userRepository.findById(review.getUserId())
                                 .map(user -> user.getName())
-                                .orElse("Anonymous"); 
+                                .orElse("Anonymous");
             return new ReviewWithUserDTO(
                 review.getId(),
                 username,
@@ -49,19 +50,24 @@ public class ReviewService {
     }
 
     public List<Review> getReviewsForUser(Long userId) {
-        return reviewRepository.findByUserId(userId);  
+        return reviewRepository.findByUserId(userId);
     }
 
-    public Review createReview(Long userId, Long productId, String reviewText, int rating, MultipartFile image) throws IOException {
+    public Review createReview(ReviewCreateDTO reviewCreateDTO) throws IOException {
         String imageUrl = null;
-        if (image != null && !image.isEmpty()) {
+        if (reviewCreateDTO.getImage() != null && !reviewCreateDTO.getImage().isEmpty()) {
             try {
-                imageUrl = firebaseService.uploadFile(image, "/reviews");
+                imageUrl = firebaseService.uploadFile(reviewCreateDTO.getImage(), "/reviews");
             } catch (IOException e) {
                 throw new IOException("Failed to upload image", e);
             }
         }
-        Review review = new Review(userId, productId, reviewText, rating, imageUrl);  
-        return reviewRepository.save(review); 
+        Review review = new Review(
+                reviewCreateDTO.getUserId(),
+                reviewCreateDTO.getProductId(),
+                reviewCreateDTO.getReviewText(),
+                reviewCreateDTO.getRating(),
+                imageUrl);
+        return reviewRepository.save(review);
     }
 }

@@ -3,16 +3,11 @@ package com.g02.handyShare.Review.Controller;
 import java.io.IOException;
 import java.util.List;
 
+import com.g02.handyShare.Review.Dto.ReviewCreateDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.g02.handyShare.Config.Firebase.FirebaseService;
@@ -47,20 +42,15 @@ public class ReviewController {
         return reviewService.getReviewsForUser(user);  
     }
 
-    // Endpoint to create new review
     @PostMapping("/review-create")
     public ResponseEntity<ReviewResponse> createReview(
-            @RequestParam("userId") Long userId,
-            @RequestParam("productId") Long productId,
-            @RequestParam("reviewText") String reviewText,
-            @RequestParam("rating") int rating,
-            @RequestParam(value = "image", required = false) MultipartFile image) throws IOException {
-        
-        Review review = reviewService.createReview(userId, productId, reviewText, rating, image);
-    
+            @ModelAttribute ReviewCreateDTO reviewCreateDTO) throws IOException {
+
+        Review review = reviewService.createReview(reviewCreateDTO);
         ReviewResponse response = new ReviewResponse("Review created successfully", review);
-    
+
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
-    
+
+
 }
