@@ -24,17 +24,29 @@ public class TrendingService {
         return ResponseEntity.ok(response);
     }
 
-    public Trending addToTrending(Long productId) {
+    // public Trending addToTrending(Long productId) {
 
-        try{
+    //     try{
+    //         Product product = productRepository.findById(productId)
+    //                 .orElseThrow(() -> new RuntimeException("Product not found with id: " + productId));
+    //         Trending trending = new Trending();
+    //         trending.setProduct(product);
+    //         return repository.save(trending);
+    //     }catch (Exception e){
+    //         throw new RuntimeException("Something went wrong while adding the product to the trending table"+e);
+    //     }
+
+    // }
+    public Trending addToTrending(Long productId) {
+        try {
             Product product = productRepository.findById(productId)
                     .orElseThrow(() -> new RuntimeException("Product not found with id: " + productId));
             Trending trending = new Trending();
             trending.setProduct(product);
             return repository.save(trending);
-        }catch (Exception e){
-            throw new RuntimeException("Something went wrong while adding the product to the trending table"+e);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Something went wrong while adding the product to the trending table: " + e.getMessage());
         }
-
     }
+    
 }

@@ -31,7 +31,7 @@ function ChangePassword() {
 
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/all/change-password?token=${token}`, {
+      const response = await fetch(`http://172.17.0.99:8080/api/v1/all/change-password?token=${token}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

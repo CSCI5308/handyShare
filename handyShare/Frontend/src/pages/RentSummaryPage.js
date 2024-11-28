@@ -1,9 +1,10 @@
+
+
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import HeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar.js';
 import { motion } from 'framer-motion';
 import { Tooltip, Modal } from 'antd';
-import defaultProfileImage from './defaultProfileImage.png';
 
 const RentSummaryPage = () => {
   const navigate = useNavigate();
@@ -20,9 +21,34 @@ const RentSummaryPage = () => {
 
   const totalPrice = product.rentalPrice * hours;
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     setIsModalVisible(false);
-    navigate('/payment', { state: { amount: totalPrice } });
+
+    try {
+        // Make an API call to your backend to create the checkout session
+        const response = await fetch('http://172.17.0.99:8080/api/v1/all/payment/checkout-session', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            mode: 'cors', // Enable CORS handling
+            body: JSON.stringify({
+                amount: totalPrice * 100, // Convert to cents
+                currency: 'usd',
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        // Redirect to Stripe checkout page
+        window.location.href = data.url;
+    } catch (error) {
+        console.error('Error fetching checkout session:', error);
+        alert('Failed to create Stripe checkout session. Please try again.');
+    }
   };
 
   // Ensure selectedDate is a Date object

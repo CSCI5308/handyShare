@@ -41,6 +41,9 @@ public class PasswordResetService {
     }
 
     public String resetPassword(String token, String newPassword) {
+        if (newPassword == null || newPassword.trim().isEmpty()) {
+            return "Invalid or expired token"; // Return an appropriate message if password is empty
+        }
         User user = userRepository.findByResetToken(token);
         if (user == null || user.getResetTokenExpiry().before(new Date())) {
             return "Invalid or expired token";

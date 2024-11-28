@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Layout, Menu, Card, Button, Modal, message, Row, Col, Switch } from 'antd';
 import axios from 'axios';
 import { SERVER_URL } from '../constants.js';
-import LendPageHeader from '../components/LendingPage/LendPageHeader.js';
-import { Link } from 'react-router-dom';
+ import { Link } from 'react-router-dom';
 import LendFormPage from '../components/LendingPage/LendFormPage';
 import LentProductsList from '../components/LendingPage/LentProductsList';
+import  AnimatedHeader   from '../components/Header.js';
 
 const { Content, Sider } = Layout;
 
@@ -43,7 +43,7 @@ const LendPage = () => {
 
   return (
     <Layout>
-      <LendPageHeader />
+      <AnimatedHeader/>
       <Layout>
         <Sider>
           <Menu selectedKeys={[view]} onClick={(e) => setView(e.key)}>

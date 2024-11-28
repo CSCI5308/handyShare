@@ -12,7 +12,8 @@ const ProfileHeaderBar = () => {
   const handleSignOut = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('role'); 
-
+    localStorage.removeItem('productId');
+    localStorage.removeItem('userId');
     message.success('Successfully signed out');
     navigate('/login'); 
   };

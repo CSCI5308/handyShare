@@ -26,6 +26,11 @@ public class PasswordResetController {
     @PostMapping("/change-password")
     public ResponseEntity<String> resetPassword(@RequestParam("token") String token, @RequestBody Map<String, String> request) {
         String newPassword = request.get("newPassword");
+
+        if (newPassword == null || newPassword.isEmpty()) {
+            return ResponseEntity.badRequest().body("Required parameter 'newPassword' is missing");
+        }
+
         String result = passwordResetService.resetPassword(token, newPassword);
         
         if ("Password reset successful".equals(result)) {

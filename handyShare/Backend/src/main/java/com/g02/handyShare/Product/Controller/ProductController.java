@@ -55,8 +55,9 @@ public class ProductController {
     }
 
     @GetMapping("/user/allProducts")
-    public List<Product> getAllCategories() {
-        return productService.getAllProducts();
+    public ResponseEntity<List<Product>> getAllProducts() {
+        List<Product> products = productService.getAllProducts();
+        return ResponseEntity.ok(products);
     }
 
     @DeleteMapping("/user/product/delete/{id}")

@@ -3,10 +3,10 @@ name: HandyShare CI/CD
 on:
   push:
     branches:
-      - main
+      - Development
   pull_request:
     branches:
-      - main
+      - Development
   workflow_dispatch:
 
 jobs:
@@ -35,12 +35,6 @@ jobs:
         run: |
           CI=false npm run build
 
-      - name: Upload frontend build
-        uses: actions/upload-artifact@v3
-        with:
-          name: frontend-build
-          path: ./handyShare/Frontend/build
-
   backend:
     runs-on: ubuntu-latest
     needs: frontend
@@ -54,6 +48,11 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: '17'
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
 
       - name: Cache Maven packages
         uses: actions/cache@v3
@@ -71,16 +70,37 @@ jobs:
         working-directory: ./handyShare/Backend
         run: mvn clean install
 
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
       - name: Package backend
         working-directory: ./handyShare/Backend
         run: mvn package
 
-      - name: Upload backend artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: backend-jar
-          path: ./handyShare/Backend/target/*.jar
-
+        
+      - name: Install Python dependencies
+        run: |
+          pip install -r ./handyShare/code_quality/requirements.txt
+          
+      - name: Run Designite for code quality analysis
+        run: |
+          # Create the report directory
+          mkdir -p ./handyShare/code_quality/report
+          
+          # Run Designite
+          java -jar ./handyShare/code_quality/DesigniteJava.jar -i ./handyShare/Backend/ -o ./handyShare/code_quality/report
+          
+          # Install required Python package
+          pip install csv2md requests
+          
+          # Change to code_quality directory and run Python script
+          cd ./handyShare/code_quality
+          python3 issue.py "${{ github.sha }}" "${{ secrets.SAMARTH_PAT }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
   deploy:
     runs-on: self-hosted
     needs: backend

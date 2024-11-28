@@ -1,16 +1,15 @@
+
 package com.g02.handyShare.Payment.Controller;
 
 import com.g02.handyShare.Payment.Request.PaymentRequest;
 import com.g02.handyShare.Payment.Service.PaymentService;
 import com.stripe.exception.StripeException;
-import com.stripe.model.Charge;
-import com.stripe.net.RequestOptions;
 
-import java.util.HashMap;
-import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/all/payment")
@@ -23,29 +22,38 @@ public class PaymentController {
     this.paymentService = paymentService;
   }
 
+  @PostMapping("/checkout-session")
+  public ResponseEntity<Map<String, Object>> createCheckoutSession(@RequestBody Map<String, Object> request) {
+    try {
+      Long amount = Long.parseLong(request.get("amount").toString());
+      String currency = request.get("currency").toString();
 
-  @PostMapping("/charge")
-  public ResponseEntity<Map<String, Object>> createPaymentIntent(@RequestBody PaymentRequest paymentRequest) throws Exception {
-    long amount = paymentRequest.getAmount(); // amount in cents
-    String currency = paymentRequest.getCurrency();
-    String paymentMethodId = paymentRequest.getPaymentMethodId();
-
-
-    if (paymentMethodId == null || paymentMethodId.isEmpty()) {
-      throw new Exception("Payment method ID must be provided.");
+      Map<String, Object> response = paymentService.createCheckoutSession(amount, currency);
+      if (response.containsKey("error")) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+      }
+      return ResponseEntity.ok(response);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "Failed to create Stripe checkout session"));
+    }
   }
-    // Create a PaymentRequest object
-    // PaymentRequest paymentRequest = new PaymentRequest(amount, currency);
 
-    // // Call the payment service with the PaymentRequest object
-    // Map<String, Object> response = paymentService.createPaymentIntent(paymentRequest);
-  Map<String,Object> response = paymentService.createPaymentIntent(paymentRequest);
+  @PostMapping("/onboard")
+  public ResponseEntity<Map<String, Object>> onboardCustomer(@RequestBody PaymentRequest paymentRequest) {
+    Map<String, Object> response = paymentService.onboardCustomer(paymentRequest);
     return ResponseEntity.ok(response);
-    
-}
+  }
+
+  @PostMapping("/save-card")
+  public ResponseEntity<Map<String, Object>> saveCard(@RequestBody PaymentRequest paymentRequest) throws Exception {
+    Map<String, Object> response = paymentService.saveCard(paymentRequest);
+    return ResponseEntity.ok(response);
+  }
 
   @RequestMapping(method = RequestMethod.OPTIONS)
   public void handleOptions() {
-    // this will allow the preflight request to pass
+    // Allow preflight request to pass
   }
 }

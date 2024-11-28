@@ -12,6 +12,7 @@ import io.jsonwebtoken.lang.Arrays;
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -85,7 +86,7 @@ public class UserController {
     public ResponseEntity<String> verifyEmail(@RequestParam String token) {
         String response = userService.verifyUser(token);
             if(response.contains("Successfully")){
-                return ResponseEntity.ok().body("Email varified");
+                return ResponseEntity.ok().body("Email verified");
             }
        
         return ResponseEntity.badRequest().body("Invalid or expired token.");
@@ -110,6 +111,7 @@ public class UserController {
             Map<String, String> responseBody = new HashMap<>();
             responseBody.put("token", jwt);
             responseBody.put("role", existingUser.getRole()); // Adding role to the response
+            responseBody.put("userId", String.valueOf(existingUser.getId()));
 
             return ResponseEntity.ok().body(responseBody);
         } catch (Exception e) {
