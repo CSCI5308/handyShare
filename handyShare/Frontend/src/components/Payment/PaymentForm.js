@@ -33,7 +33,7 @@ const PaymentForm = ({ onSuccess, amount }) => {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://172.17.0.99:8080/api/v1/all/payment/charge', {
+      const response = await axios.post('http://localhost:8080/api/v1/all/payment/charge', {
         amount: parseInt(amount) * 100,
         currency: currency,
         paymentMethodId: paymentMethod.id,

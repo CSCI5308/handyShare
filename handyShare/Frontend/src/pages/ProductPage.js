@@ -43,14 +43,14 @@ const ProductPage = () => {
         const token = localStorage.getItem('token');
 
         // Fetch product details
-        const productResponse = await axios.get(`http://172.17.0.99:8080/api/v1/user/product/${id}`, {
+        const productResponse = await axios.get(`http://localhost:8080/api/v1/user/product/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true
         });
         setProduct(productResponse.data);
 
         // Fetch reviews for the product
-        const reviewsResponse = await axios.get(`http://172.17.0.99:8080/api/v1/user/review-product/${id}`, {
+        const reviewsResponse = await axios.get(`http://localhost:8080/api/v1/user/review-product/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true
         });
@@ -126,7 +126,7 @@ const ProductPage = () => {
 
 
       const response = await axios.post(
-        'http://172.17.0.99:8080/api/v1/user/borrowProduct',
+        'http://localhost:8080/api/v1/user/borrowProduct',
         borrowData,
         {
           headers: {

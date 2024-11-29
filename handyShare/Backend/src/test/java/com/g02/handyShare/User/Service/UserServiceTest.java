@@ -140,7 +140,7 @@
 //        // Arrange
 //        when(userRepository.findByEmail(testUser.getEmail())).thenReturn(null);
 //        when(passwordEncoder.encode(testUser.getPassword())).thenReturn("encodedPassword");
-//        when(constants.getSERVER_URL()).thenReturn("http://172.17.0.99:8080");
+//        when(constants.getSERVER_URL()).thenReturn("http://localhost:8080");
 //        when(emailService.sendEmail(eq(testUser.getEmail()), anyString(), anyString())).thenReturn("Success");
 //
 //        // Act
@@ -326,6 +326,16 @@ class UserServiceTest {
        testUser.setPassword("password123");
        testUser.setName("Test User");
        testUser.set_email_verified(false); // Updated setter
+   }
+
+   @Test
+   void registerUser_Success() {
+       // Arrange
+       when(userRepository.findByEmail(testUser.getEmail())).thenReturn(null);
+       when(passwordEncoder.encode(testUser.getPassword())).thenReturn("encodedPassword");
+       when(constants.getSERVER_URL()).thenReturn("http://localhost:8080");
+       when(emailService.sendEmail(eq(testUser.getEmail()), anyString(), anyString())).thenReturn("Success");
+
 
        when(environment.getActiveProfiles()).thenReturn(new String[] {"test"});
    }

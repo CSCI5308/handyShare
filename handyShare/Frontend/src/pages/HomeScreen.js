@@ -45,7 +45,7 @@ const EnhancedHomeScreen = () => {
   const fetchCategories = async () => {
     const token = localStorage.getItem('token');
     try {
-      const response = await axios.get("http://172.17.0.99:8080/api/v1/user/allCategories", {
+      const response = await axios.get("http://localhost:8080/api/v1/user/allCategories", {
         headers: { Authorization: `Bearer ${token}` },
         withCredentials: true
       });

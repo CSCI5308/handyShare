@@ -10,8 +10,8 @@
 //   // Fetch users from backend
 //   useEffect(async () => {
 //     const token = localStorage.getItem('token');
-//     // axios.get('http://172.17.0.99:8080/api/v1/admin/getUser')
-//     const productResponse = await axios.get(`http://172.17.0.99:8080/api/v1/admin/getUser`,{
+//     // axios.get('http://localhost:8080/api/v1/admin/getUser')
+//     const productResponse = await axios.get(`http://localhost:8080/api/v1/admin/getUser`,{
         
 //       headers: {
                  
@@ -106,7 +106,7 @@ const Users = () => {
     const fetchUsers = async () => {
       const token = localStorage.getItem('token');
       try {
-        const response = await axios.get(`http://172.17.0.99:8080/api/v1/admin/getUser`, {
+        const response = await axios.get(`http://localhost:8080/api/v1/admin/getUser`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

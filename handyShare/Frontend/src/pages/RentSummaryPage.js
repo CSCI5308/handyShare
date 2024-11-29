@@ -26,7 +26,7 @@ const RentSummaryPage = () => {
 
     try {
         // Make an API call to your backend to create the checkout session
-        const response = await fetch('http://172.17.0.99:8080/api/v1/all/payment/checkout-session', {
+        const response = await fetch('http://localhost:8080/api/v1/all/payment/checkout-session', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
