@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import HeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar.js';
-import { Link, useNavigate } from 'react-router-dom';
+ import { Link, useNavigate } from 'react-router-dom';
 import { message } from 'antd';
+import AnimatedHeader from '../components/Header';
 
 const ProductsList = () => {
   const navigate = useNavigate();
@@ -98,7 +98,7 @@ const ProductsList = () => {
 
   return (
     <div>
-      <HeaderBar />
+      <AnimatedHeader />
       <div className="max-w-7xl mx-auto p-6">
         <h2 className="text-2xl font-semibold text-center mb-5">Items</h2>
 

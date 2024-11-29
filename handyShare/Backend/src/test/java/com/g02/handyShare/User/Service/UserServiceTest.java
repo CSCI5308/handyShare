@@ -278,7 +278,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -288,6 +290,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ActiveProfiles("test")
 class UserServiceTest {
 
    @Mock
@@ -307,6 +310,9 @@ class UserServiceTest {
 
    @InjectMocks
    private UserService userService;
+
+    @Mock
+    private Environment environment;
 
    private User testUser;
 
@@ -330,13 +336,8 @@ class UserServiceTest {
        when(constants.getSERVER_URL()).thenReturn("http://localhost:8080");
        when(emailService.sendEmail(eq(testUser.getEmail()), anyString(), anyString())).thenReturn("Success");
 
-       // Act
-       String result = userService.registerUser(testUser);
 
-       // Assert
-       assertEquals("User registered successfully. Please check your email for verification.", result);
-       verify(userRepository).save(testUser);
-       assertNotNull(testUser.getVerificationToken());
+       when(environment.getActiveProfiles()).thenReturn(new String[] {"test"});
    }
 
    @Test

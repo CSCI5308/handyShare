@@ -70,7 +70,7 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/signup", "/api/v1/all/**", "/api/v1/all/payment/checkout-session", "/api/v1/all/forgot-password/**", "/api/v1/all/change-password/**" , "/genToken", "/admin/getUser").permitAll()
+                        .requestMatchers("/signup","/api/v1/all/**", "/api/v1/all/payment/checkout-session", "/api/v1/all/forgot-password/**", "/api/v1/all/change-password/**" , "/genToken", "/admin/getUser", "/h2-console/**").permitAll()
                         .requestMatchers("api/v1/admin/**", "/admin/getUser").hasAnyAuthority("admin")  // Only accessible by users with ADMIN role
                         .requestMatchers("api/v1/user/**").hasAnyAuthority("user", "admin")  // Only accessible by users with USER or ADMIN roles
                         .requestMatchers("/api/v1/user/lender/**").authenticated()
@@ -78,7 +78,7 @@ public class SecurityConfig {
                 )
                 .oauth2Login(oauth2 -> oauth2
                 .defaultSuccessUrl("/homepage", true) // Redirect to homepage on success
-            
+
                 .successHandler(new AuthenticationSuccessHandler() {
                     @Override
                     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -97,24 +97,24 @@ public class SecurityConfig {
                     newUser.setName(user.getAttribute("name"));
                     newUser.set_email_verified(true);
                     userRepo.save(newUser);
-                    
-                       
+
+
                   }
 
-                
-                   
-                  
+
+
+
                   String token = jwtUtil.generateToken(email);
                   logger.info("User email after successful OAuth2 login: {}-------------------------------------------------------", email+"token -----------------------------------------------"+ token);
 
                   response.sendRedirect(constant.FRONT_END_HOST + "/homepage?token=" + token);
-                   
-                
-             
-                      
+
+
+
+
                     }
                 })
-            
+
             )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

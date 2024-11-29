@@ -48,7 +48,7 @@ const LendPage = () => {
         <Sider>
           <Menu selectedKeys={[view]} onClick={(e) => setView(e.key)}>
             <Menu.Item key="lendings">Rented Products</Menu.Item>
-            <Menu.Item key="add">Add New Product</Menu.Item>
+             
           </Menu>
         </Sider>
         <Layout style={{ padding: '0 24px 24px' }}>

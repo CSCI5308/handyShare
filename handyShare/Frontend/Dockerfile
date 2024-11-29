@@ -1,20 +1,26 @@
-# Step 1: Use an official Node.js image as the base
+# Use an official Node runtime as the base image
 FROM node:18
 
-# Step 2: Set the working directory inside the container
+# Set working directory in the container
 WORKDIR /app
 
-# Step 3: Copy package.json and package-lock.json (or yarn.lock)
+# Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Step 4: Install dependencies
+# Install global serve for hosting
+RUN npm install -g serve
+
+# Install project dependencies
 RUN npm install
 
-# Step 5: Copy the rest of your application files
+# Copy the rest of the application code
 COPY . .
 
-# Step 6: Expose the port your app runs on (default for most frontend apps is 3000)
+# Build the app
+RUN npm run build
+
+# Expose port 3000
 EXPOSE 3000
 
-# Step 7: Run the app (npm start will typically work for a React app)
-CMD ["npm", "start"]
+# Serve the app
+CMD ["serve", "-s", "build", "-l", "3000"]

@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
-import HeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar.js';
-import { message, Modal, List } from 'antd';
+ import { message, Modal, List } from 'antd';
 import { MailOutlined, PhoneOutlined, ProductFilled, StarFilled } from '@ant-design/icons';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import lenderService from '../services/lenderService.js';
 import LenderMap from '../components/LendingPage/LenderMap';
+import AnimatedHeader from '../components/Header.js';
 
 const ProductPage = () => {
   const navigate = useNavigate();
@@ -169,7 +169,7 @@ const ProductPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <HeaderBar />
+     <AnimatedHeader/>
       <main className="flex-grow p-8 mt-16 grid gap-8 sm:grid-cols-1 lg:grid-cols-3">
 
         {/* Left Section: Product Image and Description */}
@@ -406,4 +406,3 @@ const ProductPage = () => {
 };
 
 export default ProductPage;
-

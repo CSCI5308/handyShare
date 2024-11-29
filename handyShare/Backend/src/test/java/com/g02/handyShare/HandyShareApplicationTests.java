@@ -1,13 +1,11 @@
-// package com.g02.handyShare;
+ package com.g02.handyShare;
 
-// import org.junit.jupiter.api.Test;
-// import org.springframework.boot.test.context.SpringBootTest;
+ import org.junit.jupiter.api.Test;
+ import org.springframework.boot.test.context.SpringBootTest;
+ import org.springframework.boot.test.web.server.LocalServerPort;
 
-// @SpringBootTest
-// class HandyShareApplicationTests {
-
-// 	@Test
-// 	void contextLoads() {
-// 	}
-
-// }
+ @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+ class HandyShareApplicationTests {
+     @LocalServerPort
+     private int port;
+ }

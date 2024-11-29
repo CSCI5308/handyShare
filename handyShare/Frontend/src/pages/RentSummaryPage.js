@@ -98,7 +98,7 @@ const RentSummaryPage = () => {
                 <p className="text-md mb-2"><strong>Rental Date:</strong> {rentalDate.toLocaleDateString()}</p>
               )}
               <p className="text-lg font-bold mb-4 text-blue-600">
-                <strong>Total Price:</strong> ${totalPrice.toFixed(2)}
+                <strong>Total Price:</strong> ${totalPrice.toFixed(2)} + 2% Platform Fees
               </p>
 
               {/* Confirm Button with Tooltip */}

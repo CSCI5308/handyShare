@@ -2,7 +2,7 @@ package com.g02.handyShare.User.Service;
 
 import com.g02.handyShare.User.Entity.User;
 import com.g02.handyShare.User.Repository.UserRepository;
-import com.g02.handyShare.Constants;
+import com.g02.handyShare.TestConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -21,7 +21,7 @@ public class PasswordResetServiceTest {
     private EmailService emailService;
 
     @Mock
-    private Constants constants;
+    private TestConstants constants;
 
     @InjectMocks
     private PasswordResetService passwordResetService;

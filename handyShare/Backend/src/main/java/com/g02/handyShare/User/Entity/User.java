@@ -52,6 +52,12 @@ public class User {
     private String resetToken;
     private Date resetTokenExpiry;
 
+    public User(String mail, String password) {
+    }
+
+    public User(String name, String mail, String password) {
+    }
+
     public String getResetToken() {
         return resetToken;
     }

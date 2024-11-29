@@ -5,6 +5,8 @@ import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import { FaSearch, FaCheck, FaUpload } from 'react-icons/fa'
 import AnimatedHeader from '../components/Header'
+import { useParams, useNavigate, Navigate } from 'react-router-dom';
+
 
 dayjs.extend(duration)
 
@@ -29,6 +31,7 @@ const AnalogTimer = ({ startDate, endDate }) => {
     }
   }
 
+  
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft())
 
   useEffect(() => {
@@ -44,7 +47,6 @@ const AnalogTimer = ({ startDate, endDate }) => {
   const totalSeconds = timeLeft.days * 86400 + timeLeft.hours * 3600 + timeLeft.minutes * 60 + timeLeft.seconds
   const totalDuration = dayjs(endDate).diff(dayjs(startDate), 'second')
   const progress = (totalSeconds / totalDuration) * 100
-
   return (
     <div className="relative w-24 h-24">
       <svg viewBox="0 0 100 100" className="w-full h-full transform -rotate-90">
@@ -78,6 +80,8 @@ const AnalogTimer = ({ startDate, endDate }) => {
 }
 
 function BorrowingPage() {
+  const  navigate = useNavigate();
+
   const [borrowings, setBorrowings] = useState([])
   const [sortOrder, setSortOrder] = useState('Newest')
   const [searchText, setSearchText] = useState('')
@@ -191,6 +195,9 @@ function BorrowingPage() {
 
       setReturnedItems((prev) => new Set(prev).add(selectedBorrowId))
       alert("Product returned successfully!")
+
+    navigate('/feedback')
+      
     } catch (error) {
       alert("Failed to return product")
       console.error(error)

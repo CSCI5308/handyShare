@@ -54,11 +54,12 @@ public class UserController {
     private JwtUtil jwtUtil;
 
     @PostMapping("/all/register")
-    public ResponseEntity<String> registerUser( @RequestBody User user) {
+    public ResponseEntity<String> registerUser(@RequestBody User user) {
+        try {
+            if (user.getEmail() == null || user.getEmail().isEmpty()) {
+                return ResponseEntity.badRequest().body("Email is required");
+            }
 
-        if (user.getEmail() == null || user.getEmail().isEmpty()) {
-            return ResponseEntity.badRequest().body("Email is required");
-        } else {
             String result = userService.registerUser(user);
 
             if (result.contains("already registered")) {
@@ -66,6 +67,9 @@ public class UserController {
             }
 
             return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace(); // Log the full stack trace
+            return ResponseEntity.badRequest().body("Error during registration: " + e.getMessage());
         }
     }
 
