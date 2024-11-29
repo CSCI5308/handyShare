@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 public class Constants {
 
     public final String SECRET = "AFSDVS";
-    public final String FRONT_END_HOST="http://172.17.0.99:3000";
-    public final String SERVER_URL = "http://172.17.0.99:8080";
+    public final String FRONT_END_HOST="http://localhost:3000";
+    public final String SERVER_URL = "http://localhost:8080";
 
     public String getSecret() {
         return SECRET;
@@ -27,6 +27,6 @@ public class Constants {
     }
 
     public String getSERVER_URL() {
-        return "http://172.17.0.99:8080";
+        return "http://localhost:8080";
     }
 }

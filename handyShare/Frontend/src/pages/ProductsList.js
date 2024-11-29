@@ -21,11 +21,11 @@ const ProductsList = () => {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const productsResponse = await axios.get('http://172.17.0.99:8080/api/v1/user/allProducts', {
+        const productsResponse = await axios.get('http://localhost:8080/api/v1/user/allProducts', {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
         });
-        const categoriesResponse = await axios.get('http://172.17.0.99:8080/api/v1/user/allCategories', {
+        const categoriesResponse = await axios.get('http://localhost:8080/api/v1/user/allCategories', {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
         });

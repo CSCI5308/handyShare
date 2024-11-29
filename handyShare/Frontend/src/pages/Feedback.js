@@ -55,7 +55,7 @@ const FeedbackPage = ({ productId, userId }) => {
       formData.append("rating", rating);
       if (image) formData.append("image", image);
 
-      const response = await axios.post('http://172.17.0.99:8080/api/v1/user/review-create', formData, {
+      const response = await axios.post('http://localhost:8080/api/v1/user/review-create', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',

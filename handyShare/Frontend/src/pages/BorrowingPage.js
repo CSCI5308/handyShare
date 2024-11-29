@@ -97,7 +97,7 @@ function BorrowingPage() {
     const fetchBorrowedProducts = async () => {
       try {
         const token = localStorage.getItem('token')
-        const response = await axios.get('http://172.17.0.99:8080/api/v1/user/borrowedProducts', {
+        const response = await axios.get('http://localhost:8080/api/v1/user/borrowedProducts', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -186,7 +186,7 @@ function BorrowingPage() {
 
     try {
       const token = localStorage.getItem('token')
-      await axios.post('http://172.17.0.99:8080/api/v1/user/product/ReturnedBorrower', formData, {
+      await axios.post('http://localhost:8080/api/v1/user/product/ReturnedBorrower', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
